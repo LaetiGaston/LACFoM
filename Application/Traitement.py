@@ -849,3 +849,10 @@ if __name__ == "__main__":
     print(Echantillon_F.concordance_pere_foet)
     print(resultats)
     print(conclusion)
+
+    
+#Application mise au point par :
+#Mirna Marie-Joseph
+#Théo Gauvrit
+#Kévin Merchadou
+
