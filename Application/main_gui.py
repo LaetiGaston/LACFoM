@@ -27,7 +27,7 @@ from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.tabbedpanel import TabbedPanelHeader
 from kivy.utils import platform
 
-import Traitement2
+import Traitement
 import pdf_feuille_resultat
 
 kivy.require('1.10.1')
