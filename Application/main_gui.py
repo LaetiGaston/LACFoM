@@ -435,12 +435,12 @@ class EcranFctMethod(GridLayout):
                 """
         try:
             # lecture du fichier et traitement
-            M, F, P, Echantillon_F = Traitement2.lecture_fichier(os.path.join(path, filename[0]))
+            M, F, P, TPOS, TNEG, Echantillon_F = Traitement.lecture_fichier(os.path.join(path, filename[0]))
             logger.info("fonction lecture fichier réussi")
             Echantillon_F.set_seuil_hauteur(eval(self.hauteur))
             Echantillon_F.set_seuil_nbre_marqueurs(float(self.nb))
             logger.info("Attribution des taux réussi")
-            resultats, conclusion = Echantillon_F.analyse_donnees(M, F, P)
+            resultats, conclusion = Echantillon_F.analyse_donnees(M, F, P, TPOS, TNEG)
             logger.info("Fonction analyse_données réussi")
             # récupération et attribution de données
             self.titre = self.cpt_onglets(Echantillon_F.get_name())

@@ -115,7 +115,7 @@ class Echantillon:
         """
         self.conclusion = conclusion
 
-    def analyse_donnees(self, mere, foetus, pere):
+    def analyse_donnees(self, mere, foetus, pere, t_pos, t_neg):
         """ Analyze data
             Concordance between mere/foetus and pere/foetus is done.
             For one couple lignes mere/foetus, informative character and conclusion is set.
@@ -124,12 +124,40 @@ class Echantillon:
                 mere (list) : lines extracted from txt file corresponding to mother
                 foetus (list) : lines extracted from txt file corresponding to fetus
                 pere (list) : lines extracted from txt file corresponding to father
+                t_pos (list) : lines extracted from txt file corresponding to t pos
+                t_neg (list) : lines extracted from txt file corresponding to t neg
 
             Return two dataframes :
                 - first one containing information about Name, Conclusion and Details for each marker
                 - second one containing global information about sample (Number of informative markers, contaminated markers and free contaminated markers )
             """
-        logger.info("Analyse des données")
+        positif = [["AMEL", "CSF1PO", "D13S317", "D16S539", "D18S51", "D21S11", "D3S1358", "D5S818",
+                   "D7S820", "D8S1179", "FGA", "Penta_D", "Penta_E", "TH01", "TPOX", "vWA"]
+                    [["X","Y"], [12], [9, 11], [9, 13], [16,18], [29,31.2], [17,18], [12],
+                     [8,11],[14,15],[20,23],[12,13],[7,14], [6,9.3], [11], [16,19]]]
+        try:
+
+
+            logger.info("Analyse des données")
+            logger.info("Vérification témoin positif")
+            for indice_alleles in range(len(t_pos)):
+                concordance = True
+                for indice_allele_pos in range(2):
+                    if t_pos[indice_alleles].allele[indice_allele_pos] not in positif[1][indice_alleles]:
+                        concordance = False
+                        t_pos[indice_alleles].concordance = "NON"
+
+            logger.info("Vérification témoin négatif")
+            for indice_alleles in range(len(t_neg)):
+                concordance = True
+                for indice_allele_pos in range(2):
+                    if t_neg[indice_alleles].allele[indice_allele_pos] != 0.0:
+                        concordance = False
+                        t_neg[indice_alleles].concordance = "NON"
+        except Exception as e:
+            logger.error("Vérification concordance témoins pos et neg impossible", exc_info=True)
+
+        logger.info("Vérification concordance des ADNs entre mère et foetus")
         logger.info("Vérification concordance ADN")
         concordance_mf = 0
         concordance_pf = None
@@ -238,19 +266,19 @@ class Echantillon:
                 logger.info("Détermination contamination pour échantillon terminée")
                 logger.info("Fin de traitement")
                 logger.info("Stockage des conclusions")
-                resultats, conclusion = self.resultat(concordance_mf, concordance_pf, foetus, mere, pere)
+                resultats, conclusion = self.resultat(concordance_mf, concordance_pf, foetus, mere, pere, t_pos, t_neg)
                 return resultats, conclusion
             except Exception as e:
                 logger.error("Traitement des marqueurs impossible", exc_info=True)
 
-    def resultat(self, concordance_mf, concordance_pf, liste_F, liste_M, liste_P):
+    def resultat(self, concordance_mf, concordance_pf, liste_F, liste_M, liste_P, liste_TPOS, liste_TNEG):
         """ Set informative character and conclusion for each marker using code tables
                 Code tables are :
 
                 Informative code :
                     0 : Homozygous mother
                     1 : Informative marker
-                    2 : Same alleles between mother and fetus
+                    2 : Same alleles between mother and foetus
                     3 : Stutter
 
                 Contamination code :
@@ -275,7 +303,7 @@ class Echantillon:
 
         """
         resultat = {"Marqueur": [], "Conclusion": [], "Concordance Mere/Foetus": [], "Détails M/F": [],
-                    "Concordance Pere/Foetus": [], "Détails P/F": []}
+                    "Concordance Pere/Foetus": [], "Détails P/F": [], "Témoin Positif": [], "Témoin Négatif": []}
         marqueurs_conta = 0
         marqueurs_conta_majeur = 0
         marqueurs_non_conta = 0
@@ -288,6 +316,16 @@ class Echantillon:
                 self.set_sexe("M")
         except Exception as e:
             logger.error("Détermination du sexe impossible", exc_info=True)
+
+        # Concordance t pos t neg
+        try:
+            for indice in range(len(liste_TPOS)):
+                if liste_TPOS[indice].concordance == "NON":
+                    resultat["Témoin Positif"].append(liste_TPOS[indice])
+                if liste_TNEG[indice].concordance == "NON":
+                    resultat["Témoin Négatif"].append(liste_TNEG[indice])
+        except Exception as e:
+            logger.error("Détermination Témoins positif et négatif impossible", exc_info=True)
 
         try:
             if concordance_mf != len(liste_F) and concordance_pf != len(liste_F) or concordance_mf != len(
@@ -358,7 +396,7 @@ class Echantillon:
                         resultats = pd.DataFrame(resultat,
                                                  columns=["Marqueur", "Concordance Mere/Foetus", "Détails M/F",
                                                           "Concordance Pere/Foetus", "Détails P/F"])
-                    logger.info("Répertoriation terminée")
+                    logger.info("Répertorisation terminée")
                     logger.info("Analyse des données terminée")
                     logger.info("Résultats renvoyés et prêts pour l'affichage")
                     return resultats, conclusion
@@ -540,6 +578,25 @@ class Echantillon:
         else:
             self.conclusion = 0
 
+class Temoin:
+    """
+    Temoin of analysis
+    Attributes:
+        marqueur (list)
+        allele (list)
+        hauteur (list)
+        informatif (int)
+    """
+    def init(self, num, marqueur, allele, hauteur, informatif):
+        """
+
+        :param num:
+        :param marqueur:
+        :param allele:
+        :param hauteur:
+        :param informatif:
+        :return:
+        """
 
 class Patient:
     """ Common informations between mother and fetus
@@ -549,6 +606,7 @@ class Patient:
             allele (list) : alleles list
             hauteur (list) : alleles height list
             informatif (int) : informatif character of marker
+            num (string) : name of the patient (ID)
     """
 
     def __init__(self, num, marqueur, allele, hauteur, informatif):
@@ -617,6 +675,23 @@ class Patient:
             if liste_alleles[alleles] != 0.0:
                 liste_alleles2.append(liste_alleles[alleles])
         return liste_alleles2
+
+class Temoin(Patient):
+    """ Exclusive informations about the mother. Mere class inherits from Patient.
+
+        Attributes :
+            homozygote (boolean) : set to True if the mother is homozygous for the marker studied
+    """
+
+    def __init__(self, num, marqueur, allele, hauteur, informatif, concordance=None):
+        """ The constructor for Mere class
+
+            Parameters :
+                - homozygote (boolean) : set to True if the mother is homozygous for the marker studied
+        """
+
+        super().__init__(num, marqueur, allele, hauteur, informatif)
+        self.concordance = concordance
 
 
 class Mere(Patient):
@@ -766,10 +841,12 @@ def lecture_fichier(path_data_frame):
         Donnees_Pere (list) : list of Pere object corresponding to each line of the father extracted from the txt file
         Echantillon_F : Echantillon object to summerize the file
     """
-    iterateur = 2
+    iterateur = 4
     donnees_mere = []
     donnees_foetus = []
     donnees_pere = []
+    donnees_pos = []
+    donnees_neg = []
     logger.info("Ouverture du fichier")
     try:
         donnees_na = pd.read_csv(path_data_frame, sep='\t', header=0)
@@ -780,7 +857,7 @@ def lecture_fichier(path_data_frame):
     logger.info("Chargement des données")
     try:
         if (donnees.shape[0] > 32):
-            iterateur = 3
+            iterateur = 5
             num_pere = re.search("\w-(\w*)", donnees["Sample Name"].values[2]).group(1)
         allele_na = donnees[["Allele 1", "Allele 2", "Allele 3"]].values
         hauteur_na = donnees[["Height 1", "Height 2", "Height 3"]].values
@@ -793,17 +870,24 @@ def lecture_fichier(path_data_frame):
                      hauteur[ligne], None, False)
             f = Foetus(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 1],
                        hauteur[ligne + 1], None, None, None, None)
-            if (iterateur == 3):
+            if (iterateur == 5):
                 p = Pere(num_pere, donnees["Marker"][ligne],
                          allele[ligne + 2], hauteur[ligne + 2], None, None)
+                t_pos = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 3], hauteur[ligne + 3])
+                t_neg = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 4], hauteur[ligne + 4])
+            else:
+                t_pos = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 2], hauteur[ligne + 2])
+                t_neg = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 3], hauteur[ligne + 3])
                 donnees_pere.append(p)
             donnees_mere.append(m)
             donnees_foetus.append(f)
+            donnees_pos.append(t_pos)
+            donnees_neg.append(t_neg)
         echantillon_f = Echantillon(date_echantillon, nom_echantillon, f)
     except Exception as e:
         logger.error("Chargement données impossible", exc_info=True)
 
-    return donnees_mere, donnees_foetus, donnees_pere, echantillon_f
+    return donnees_mere, donnees_foetus, donnees_pere, donnees_pos, donnees_neg, echantillon_f
 
 
 def homogeneite_type(list_allele, list_hauteur):
@@ -844,8 +928,8 @@ def homogeneite_type(list_allele, list_hauteur):
 
 
 if __name__ == "__main__":
-    M, F, P, Echantillon_F = lecture_fichier('non_conco_M_PM.txt')
-    resultats, conclusion = Echantillon_F.analyse_donnees(M, F, P)
+    M, F, P, POS, NEG, Echantillon_F = lecture_fichier('non_conco_M_PM.txt')
+    resultats, conclusion = Echantillon_F.analyse_donnees(M, F, P, POS, NEG)
     print(Echantillon_F.concordance_pere_foet)
     print(resultats)
     print(conclusion)
