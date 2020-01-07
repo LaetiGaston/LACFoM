@@ -27,7 +27,7 @@ from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.tabbedpanel import TabbedPanelHeader
 from kivy.utils import platform
 
-import Traitement2
+import Traitement
 import pdf_feuille_resultat
 
 kivy.require('1.10.1')
@@ -195,13 +195,13 @@ class ResAnalyse(BoxLayout):
     def attribut(self, info_parametre):
         self.info_parametre = copy.copy(info_parametre)
 
-    def remplissage(self, contamination, Echantillon_F):
+    def remplissage(self, contamination, Echantillon):
         tableau_df = self.info_parametre["df_conclusion"]
         conclusion = self.info_parametre["df_detail"]
         try:
-            if Echantillon_F.get_concordance_mere_foet() == 'NON':
+            if not Echantillon.concordance_mere_foet:
                 self.colorconcoM = (241 / 256, 31 / 256, 82 / 256, 1)
-            if Echantillon_F.get_concordance_pere_foet() == 'NON':
+            if not Echantillon.concordance_pere_foet:
                 self.colorconcoP = (241 / 256, 31 / 256, 82 / 256, 1)
 
             ########decision temoin########
@@ -237,16 +237,16 @@ class ResAnalyse(BoxLayout):
                 final_decision_neg="check.png"
 
             ########decision temoin fin########    
-            BoxConcordance = ConcordanceEtSexe(info_sexe="Sexe foetus : " + Echantillon_F.get_sexe(),
-                                               conco_M=Echantillon_F.get_concordance_mere_foet(),
-                                               conco_P=Echantillon_F.get_concordance_pere_foet(),
+            BoxConcordance = ConcordanceEtSexe(info_sexe="Sexe foetus : " + Echantillon.get_sexe(),
+                                               conco_M=Echantillon.concordance_mere_foet,
+                                               conco_P=Echantillon.concordance_pere_foet,
                                                colorconcoM=self.colorconcoM,
                                                colorconcoP=self.colorconcoP,
                                                image_pos=final_decision_pos,
                                                image_neg=final_decision_neg)
             self.ids.TitreEtConco.add_widget(BoxConcordance)
 
-            if Echantillon_F.get_concordance_mere_foet() == "OUI":
+            if Echantillon.concordance_mere_foet:
                 entete = LigneTableau(t_col1='[b]' + "Marqueurs" + '[/b]',
                                       t_col2='[b]' + "Conclusions" + '[/b]',
                                       t_col3='[b]' + "Détails" + '[/b]',
@@ -285,8 +285,8 @@ class ResAnalyse(BoxLayout):
                                          color_text2=colortext)
                     self.ids.le_tableau.add_widget(ligne)
             else:
-                if Echantillon_F.get_concordance_pere_foet() == "OUI" \
-                        or Echantillon_F.get_concordance_pere_foet() == "ABS":
+                if Echantillon.concordance_pere_foet==None \
+                        or Echantillon.concordance_pere_foet :
                     entete = LigneTableau(t_col1="Marqueurs",
                                           t_col2="Concordance Mere/Foetus",
                                           t_col3="Détails",
@@ -473,12 +473,13 @@ class EcranFctMethod(GridLayout):
                 """
         try:
             # lecture du fichier et traitement
-            M, F, P,Echantillon_F = Traitement2.lecture_fichier(os.path.join(path, filename[0]))
+            Echantillon = Traitement.lecture_fichier(os.path.join(path, filename[0]))
             logger.info("fonction lecture fichier réussi")
-            Echantillon_F.set_seuil_hauteur(eval(self.hauteur))
-            Echantillon_F.set_seuil_nbre_marqueurs(float(self.nb))
+            Echantillon.set_seuil_hauteur(eval(self.hauteur))
+            Echantillon.set_seuil_nbre_marqueurs(float(self.nb))
             logger.info("Attribution des taux réussi")
-            resultats, conclusion = Echantillon_F.analyse_donnees(M, F, P)
+            #resultats = Echantillon.get_resultats() 
+            #conclusion = Echantillon.get_conclusion()
             #########modif temoins###########################
             print(resultats)
             t_pos=[]
@@ -502,34 +503,34 @@ class EcranFctMethod(GridLayout):
 
             logger.info("Fonction analyse_données réussi")
             # récupération et attribution de données
-            self.titre = self.cpt_onglets(Echantillon_F.get_name())
+            self.titre = self.cpt_onglets(Echantillon.get_id())
 
             self.instance_path = path
             nv_onglets = CloseableHeader(text1=self.titre + "  ", panel=self.ids.les_onglets,
                                          supr_onglets=self.supr_onglets)
 
-            self.InfoParametre["Sexe"] = Echantillon_F.get_sexe()
-            self.InfoParametre["df_conclusion"] = resultats
-            self.InfoParametre["df_detail"] = conclusion
-            self.InfoParametre["code_conclu"] = Echantillon_F.get_conclusion()
-            self.InfoParametre["nom_projet"] = Echantillon_F.get_name()
-            self.InfoParametre["nom_mere"] = M[0].get_name()
+            self.InfoParametre["Sexe"] = Echantillon.foetus.sexe
+            self.InfoParametre["df_conclusion"] = pd.DataFrame.from_dict(Echantillon.get_resultats())
+            self.InfoParametre["df_detail"] = Echantillon.get_conclusion()# List of 3 values
+            self.InfoParametre["code_conclu"] = Echantillon.get_conclusion()
+            self.InfoParametre["nom_projet"] = Echantillon.get_ID()
+            self.InfoParametre["nom_mere"] = Echantillon.mere.ID
             self.InfoParametre["Emetteur"] = self.emetteur
             self.InfoParametre["Entite_appli"] = self.entite
             self.InfoParametre["nom_pdf"] = self.titre + "_" + self.InfoParametre["nom_utilisateur"]
             self.InfoParametre["Version"] = str(version)
             logger.info("Récupération des données réussi")
-            if Echantillon_F.get_concordance_pere_foet() == "ABS":
+            if Echantillon.concordance_pere_foet == None:
                 self.InfoParametre["num_pere"] = "ABS"
                 self.InfoParametre["pres_pere"] = "ABS"
             else:
-                self.InfoParametre["num_pere"] = P[0].get_name()
+                self.InfoParametre["num_pere"] = Echantillon.pere.ID
                 self.InfoParametre["pres_pere"] = "OUI"
-            self.InfoParametre["num_foetus"] = F[0].get_name()
+            self.InfoParametre["num_foetus"] = Echantillon.foetus.ID
             self.InfoParametre["filename"] = filename
             self.InfoParametre["path"] = path
-            self.InfoParametre["nb"] = str(self.nb)
-            self.InfoParametre["hauteur"] = self.hauteur
+            self.InfoParametre["nb"] = str(Echantillon.seuil_nbre_marqueurs)
+            self.InfoParametre["hauteur"] = Echantillon.seuil_hauteur
             contenu_res = ResAnalyse(
                 titre=self.titre,
                 nfoetus=self.InfoParametre["num_foetus"],
@@ -538,11 +539,11 @@ class EcranFctMethod(GridLayout):
                 NvGroupe=len(self.ids.les_onglets.tab_list),
                 save=self.save,
                 down_button=self.down_button,
-                H=self.hauteur,
-                N=str(self.nb))
+                H=Echantillon.seuil_hauteur,
+                N=str(Echantillon.seuil_nbre_marqueurs))
             contenu_res.attribut(self.InfoParametre)
-            contenu_res.remplissage(Echantillon_F.get_conclusion(),
-                                    Echantillon_F)
+            contenu_res.remplissage(Echantillon.get_contamine(),
+                                    Echantillon)
             self.content = contenu_res
             nv_onglets.content = self.content
 
