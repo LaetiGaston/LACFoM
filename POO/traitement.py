@@ -18,6 +18,81 @@ logging.basicConfig(filename='log_' + heure_vrai + '.txt', filemode='w', format=
 logger = logging.getLogger(__name__)
 
 def lecture_fichier(path_data_frame):
+    donnees_mere = []
+    donnees_foetus = []
+    donnees_pere = []
+    donnees_pos = []
+    donnees_neg = []
+    logger.info("Ouverture du fichier")
+    try:
+        donnees = pd.read_csv(path_data_frame, sep='\t', header=0, keep_default_na=False)
+        # cast Allele and Height data as float
+        tmp = donnees.columns.tolist()[3:]: #TODO: optimiser car nom Allele et Height
+        donnees = donnees.astype(dict(tmp, [float]*len(tmp)))
+    except Exception as e:
+        logger.error("Ouverture impossible", exc_info=True)
+        # 1: ouverture impossible
+        return 1
+
+    logger.info("Chargement des données")
+    try:
+        # Check the presence of TPOS and TNEG
+        if donnees[donnees["Sample Name"].str.contains("T POS") == True].shape[0] == 0:
+            logger.error("Temoin positif absent", exc_info=True)
+            # 2: T POS absent
+            return 2
+        elif donnees[donnees["Sample Name"].str.contains("T NEG") == True].shape[0] == 0:
+            logger.error("Temoin negatif absent", exc_info=True)
+            # 3: T NEG absent
+            return 3
+
+        # Check the presence of the father
+        if donnees.shape[0]%4 == 0:
+            logger.error("Absence des données du pere", exc_info=True)
+            iterateur = 4
+
+        elif donnees.shape[0]%5 == 0:
+            logger.error("Presence des données du pere", exc_info=True)
+            iterateur = 5
+        else:
+            # 4: Nombre de ligne incorrect
+            logger.error("Nombre de lignes incompatible", exc_info=True)
+            return 4
+        
+        # Get data
+        num_pere = re.search("(\w-)?(\w*)", donnees["Sample Name"].values[2]).group(2)
+        date_echantillon = re.search("(\d{4}-\d{2}-\d{2})", donnees["Sample File"].values[0]).group()
+        num_mere = re.search("(\w-)?(\w*)", donnees["Sample Name"].values[1]).group(2)
+        for ligne in range(0, donnees.shape[0] - 1, iterateur): #TODO: Pourquoi -1
+            donnees_mere[donnees["Marker"][ligne]]["Allele"] = getdata(donnees[ligne], "Allele")
+            donnees_mere[donnees["Marker"][ligne]]["Hauteur"] = getdata(donnees[ligne], "Height")
+
+
+        
+
+        ## OLD Script
+            m = Mere(num_mere, donnees["Marker"][ligne], allele[ligne],
+                     hauteur[ligne], None, False)
+            f = Foetus(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 1],
+                       hauteur[ligne + 1], None, None, None, None)
+            if (iterateur == 5):
+                p = Pere(num_pere, donnees["Marker"][ligne],
+                         allele[ligne + 2], hauteur[ligne + 2], None, None)
+                t_pos = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 3], hauteur[ligne + 3])
+                t_neg = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 4], hauteur[ligne + 4])
+            else:
+                t_pos = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 2], hauteur[ligne + 2])
+                t_neg = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 3], hauteur[ligne + 3])
+                donnees_pere.append(p)
+            donnees_mere.append(m)
+            donnees_foetus.append(f)
+            donnees_pos.append(t_pos)
+            donnees_neg.append(t_neg)
+        echantillon_f = Echantillon(date_echantillon, nom_echantillon, f)
+    except Exception as e:
+        logger.error("Chargement données impossible", exc_info=True)
+
+    return donnees_mere, donnees_foetus, donnees_pere, donnees_pos, donnees_neg, echantillon_f
 
     #MODULO A ADAPTER
     def str_to_float(dataframe, modulo):
@@ -104,7 +179,8 @@ def lecture_fichier(path_data_frame):
     logger.info("Chargement des données réussi")    
     return echantillon
 
-
+def getdata(line, name):
+    
 
 def concordance_ADN(echantillon):
     logger.info("Vérification de la concordance des ADNs")
