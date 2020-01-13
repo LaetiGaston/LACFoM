@@ -50,6 +50,7 @@ def lecture_fichier(path_data_frame):
         if donnees.shape[0]%4 == 0:
             logger.error("Absence des données du pere", exc_info=True)
             iterateur = 4
+            donnees_pere = None
 
         elif donnees.shape[0]%5 == 0:
             logger.error("Presence des données du pere", exc_info=True)
@@ -64,35 +65,29 @@ def lecture_fichier(path_data_frame):
         date_echantillon = re.search("(\d{4}-\d{2}-\d{2})", donnees["Sample File"].values[0]).group()
         num_mere = re.search("(\w-)?(\w*)", donnees["Sample Name"].values[1]).group(2)
         for ligne in range(0, donnees.shape[0] - 1, iterateur): #TODO: Pourquoi -1
+            # Mere
             donnees_mere[donnees["Marker"][ligne]]["Allele"] = getdata(donnees[ligne], "Allele")
             donnees_mere[donnees["Marker"][ligne]]["Hauteur"] = getdata(donnees[ligne], "Height")
+            # Foetus
+            donnees_foetus[donnees["Marker"][ligne]]["Allele"] = getdata(donnees[ligne], "Allele")
+            donnees_foetus[donnees["Marker"][ligne]]["Hauteur"] = getdata(donnees[ligne], "Height")
+            # Pere
+            if iterateur == 5:
+                donnees_pere[donnees["Marker"][ligne]]["Allele"] = getdata(donnees[ligne], "Allele")
+                donnees_pere[donnees["Marker"][ligne]]["Hauteur"] = getdata(donnees[ligne], "Height")
+            # Tpos
+            donnees_pos[donnees["Marker"][ligne]]["Allele"] = getdata(donnees[ligne], "Allele")
+            donnees_pos[donnees["Marker"][ligne]]["Hauteur"] = getdata(donnees[ligne], "Height")
+            # Tneg
+            donnees_neg[donnees["Marker"][ligne]]["Allele"] = getdata(donnees[ligne], "Allele")
+            donnees_neg[donnees["Marker"][ligne]]["Hauteur"] = getdata(donnees[ligne], "Height")
 
+        echantillon_f = Echantillon(date_echantillon, donnees_mere, donnees_foetus, donnees_pos, donnees_neg, donnees_pere) #date, mere, foetus, tpos, tneg, pere = None, seuil_nbre_marqueurs=2, seuil_hauteur=1 / 3
 
-        
-
-        ## OLD Script
-            m = Mere(num_mere, donnees["Marker"][ligne], allele[ligne],
-                     hauteur[ligne], None, False)
-            f = Foetus(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 1],
-                       hauteur[ligne + 1], None, None, None, None)
-            if (iterateur == 5):
-                p = Pere(num_pere, donnees["Marker"][ligne],
-                         allele[ligne + 2], hauteur[ligne + 2], None, None)
-                t_pos = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 3], hauteur[ligne + 3])
-                t_neg = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 4], hauteur[ligne + 4])
-            else:
-                t_pos = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 2], hauteur[ligne + 2])
-                t_neg = Temoin(nom_echantillon, donnees["Marker"][ligne], allele[ligne + 3], hauteur[ligne + 3])
-                donnees_pere.append(p)
-            donnees_mere.append(m)
-            donnees_foetus.append(f)
-            donnees_pos.append(t_pos)
-            donnees_neg.append(t_neg)
-        echantillon_f = Echantillon(date_echantillon, nom_echantillon, f)
     except Exception as e:
         logger.error("Chargement données impossible", exc_info=True)
-
-    return donnees_mere, donnees_foetus, donnees_pere, donnees_pos, donnees_neg, echantillon_f
+        return 5
+    return echantillon_f
 
     #MODULO A ADAPTER
     def str_to_float(dataframe, modulo):
@@ -180,7 +175,10 @@ def lecture_fichier(path_data_frame):
     return echantillon
 
 def getdata(line, name):
-    
+    data = []
+    for key in line.keys():
+        if name in key and line[key] != "":
+            data.append(line[key])
 
 def concordance_ADN(echantillon):
     logger.info("Vérification de la concordance des ADNs")
@@ -202,8 +200,12 @@ def concordance_ADN(echantillon):
         echantillon.get_concordance_pere_foet = None
 
 if __name__ == "__main__":
-    echantillon = lecture_fichier('181985_xfra_ja_200618_PP16.txt')
-    echantillon2 = lecture_fichier('PP16_XFra_F_290119_PP16.txt')
+    echantillon = lecture_fichier('Cas_avec_4.txt')
+    echantillon2 = lecture_fichier('Cas_avec_5.txt')
     concordance_ADN(echantillon)
+    concordance_ADN(echantillon2)
     print(echantillon.concordance_pere_foet)
     print(echantillon.concordance_mere_foet)
+    print(echantillon2.concordance_pere_foet)
+    print(echantillon2.concordance_mere_foet)
+
