@@ -5,4 +5,13 @@ class Pere(Individus):
 
         Did not implement because mother and fetus are enough to conclude.
     """
-    pass
+    def __init__(self, ID, data):
+        """ """
+        # On appelle explicitement le constructeur de Personne :
+        Individus.__init__(self, ID, data)
+
+    def check_sex(self):
+        for marqueur in self.data.keys():
+            if 'Y' in self.data[marqueur]['Allele']:
+                return True
+        return False
