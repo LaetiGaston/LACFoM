@@ -85,8 +85,12 @@ class Echantillon:
         """
         """
         for marqueur in self.foetus.data.keys():
+            # Gestion a part de l'amelogenine - marqueur sexuel
+            if marqueur == "AMEL":
+                self.foetus.data[marqueur]["détails"] = ""
+                self.foetus.data[marqueur]["conclusion"] = ""
             # check allele dans echo a -1 de la mere
-            if common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], self.mere.data[marqueur]["Allele"]):
+            elif common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], self.mere.data[marqueur]["Allele"]):
                 # allele du foetus dans l'echo de la mere
                 self.foetus.data[marqueur]["détails"] = "Echo"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
@@ -112,7 +116,7 @@ class Echantillon:
                 else:
                        self.foetus.data[marqueur]["conclusion"] = "Cas non envisagé"
                        self.foetus.data[marqueur]["détails"] = "Foetus: %s, Mere: %s"%(", ".join(map(str, self.foetus.data[marqueur]["Allele"])), ", ".join(map(str, self.mere.data[marqueur]["Allele"])))
-        
+
         # Compute conclusion
         contamajeur = False
         conta = 0
@@ -130,6 +134,8 @@ class Echantillon:
                     valconta += self.foetus.data[marqueur]["détails"]
         if contamajeur:
             self.conclusion = [nonconta, conta, "MAJEUR"]
+        elif conta == 0:
+            self.conclusion = [nonconta, conta, 0]
         else:
             self.conclusion = [nonconta, conta, round(valconta/conta, 2)]
         

@@ -108,4 +108,6 @@ if __name__ == "__main__":
     print(echantillon2.concordance_mere_foet)
     echantillon.analyse_marqueur()
     echantillon2.analyse_marqueur()
+    print(echantillon.get_resultats())
+    print(echantillon2.get_resultats())
 
