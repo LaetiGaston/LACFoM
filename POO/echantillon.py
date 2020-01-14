@@ -1,3 +1,9 @@
+from mere import *
+from foetus import *
+from pere import *
+from temoin import *
+
+
 class Echantillon:
 
     """ Parameters used to analyze one fetal sample
@@ -27,11 +33,14 @@ class Echantillon:
 
         """
         self.date = date
-        self.mere = mere
-        self.foetus = foetus
-        self.tpos = tpos
-        self.tneg = tneg
-        self.pere = pere
+        self.mere = Mere(*mere)
+        self.foetus = Foetus(*foetus)
+        self.tpos = Temoin(*tpos)
+        self.tneg = Temoin(*tneg)
+        if pere:
+            self.pere = Pere(*pere)
+        else:
+            self.pere = pere
         self.seuil_nbre_marqueurs = seuil_nbre_marqueurs
         self.seuil_hauteur = seuil_hauteur
         self.concordance_mere_foet = None
@@ -51,21 +60,26 @@ class Echantillon:
         concordance_mere_foet = 0
         concordance_pere_foet = 0
         for key in self.mere.data.keys():
-            self.foetus.data[keys]["concordance"] = ["OUI", "OUI"]
+            self.foetus.data[key]["concordance"] = ["OUI", "OUI"]
             if not common_element(self.mere.data[key]['Allele'], self.foetus.data[key]['Allele']):
                 self.foetus.data[keys]["concordance"][0] = "NON"
                 concordance_mere_foet += 1
-                
                 try:
+                    concordance_pere_foet = 0
                     if not common_element(self.pere.data[key]['Allele'], self.foetus.data[key]['Allele']):
-                    self.foetus.data[keys]["concordance"][1] = "NON"
-                    concordance_pere_foet += 1
-
+                        self.foetus.data[keys]["concordance"][1] = "NON"
+                        concordance_pere_foet += 1
+                except Exception as e:
+                    pass
+        
         # Check concordance
-        if concordance_mere_foet >= number:
+        self.concordance_mere_foet = True
+        if concordance_mere_foet >= number_mere:
             self.concordance_mere_foet = False
-        if concordance_pere_foet >= number:
+        if self.pere and concordance_pere_foet >= number_pere:
             self.concordance_pere_foet = False
+        elif self.pere:
+            self.concordance_pere_foet = True
 
     def analyse_marqueur(self):
         """
@@ -184,7 +198,7 @@ class Echantillon:
                 list_alleles.append("")
         return list_alleles
 
-def common_element(self,list1,list2):
+def common_element(list1,list2):
     list1_set = set(list1)
     list2_set = set(list2)
     if len(list1_set.intersection(list2_set)) > 0:
