@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 
 def lecture_fichier(path_data_frame):
-    print ("dans lecture fichier")
     data = []
     logger.info("Ouverture du fichier")
 
