@@ -1,6 +1,7 @@
 #!/home/lbourgea/Documents/Projets/Exome/pipeline_annotation/venv/bin/python
 # -*- coding: utf-8 -*-
 
+import sys
 import pandas as pd
 import numpy as np
 import logging
@@ -22,10 +23,15 @@ logger = logging.getLogger(__name__)
 
 
 def lecture_fichier(path_data_frame):
+    print ("dans lecture fichier")
     data = []
     logger.info("Ouverture du fichier")
 
     try:
+        #file_ = open(path_data_frame, "r")
+        #for line in file_.readlines():
+        #    print(line, line.split('\t'), len(line.split('\t')))
+        #file_.close()
         donnees = pd.read_csv(path_data_frame, sep='\t', header=0, keep_default_na=False)
         # cast Allele and Height data as float
         #tmp = donnees.columns.tolist()[6:] #TODO: optimiser car nom Allele et Height
@@ -37,11 +43,11 @@ def lecture_fichier(path_data_frame):
 
     logger.info("Chargement des données")
     # Check the presence of TPOS and TNEG
-    if donnees[donnees["Sample Name"].str.contains("T POS") == True].shape[0] == 0:
+    if donnees[donnees["Sample Name"].str.contains(r'T.*POS', regex=True) == True].shape[0] == 0:
         logger.error("Temoin positif absent", exc_info=True)
         # 2: T POS absent
         return 2
-    elif donnees[donnees["Sample Name"].str.contains("T NEG") == True].shape[0] == 0:
+    elif donnees[donnees["Sample Name"].str.contains(r'T.*NEG', regex=True) == True].shape[0] == 0:
         logger.error("Temoin negatif absent", exc_info=True)
         # 3: T NEG absent
         return 3
@@ -64,6 +70,10 @@ def lecture_fichier(path_data_frame):
             data[i][1][donnees["Marker"][ligne + i]] = {}
             data[i][1][donnees["Marker"][ligne + i]]["Allele"] = getdata(donnees.loc[ligne + i], "Allele")
             data[i][1][donnees["Marker"][ligne + i]]["Hauteur"] = getdata(donnees.loc[ligne + i], "Height")
+            if len(data[i][1][donnees["Marker"][ligne + i]]["Allele"]) != len(data[i][1][donnees["Marker"][ligne + i]]["Hauteur"]):
+                # Le marqueur "dans le log" n'a pas le meme nombre d'alleles que de hauteurs
+                logger.info(donnees["Marker"][ligne + i])
+                return 9
     # Deal with father data
     if iterateur == 5:
         data.insert( len(data), data.pop(2) ) 
@@ -96,18 +106,14 @@ def concordance_ADN(echantillon):
         logger.info("Concordance ADN failled")
 
 if __name__ == "__main__":
-    echantillon = lecture_fichier('Cas_avec_4.txt')
-    echantillon2 = lecture_fichier('Cas_avec_5.txt')
-    print("Cas 4")
+    file_path = sys.argv[1]
+    print(file_path)
+    echantillon = lecture_fichier(file_path)
     val = concordance_ADN(echantillon)
-    print("Cas 5")
-    val2 = concordance_ADN(echantillon2)
     print(echantillon.concordance_pere_foet)
     print(echantillon.concordance_mere_foet)
-    print(echantillon2.concordance_pere_foet)
-    print(echantillon2.concordance_mere_foet)
     echantillon.analyse_marqueur()
-    echantillon2.analyse_marqueur()
-    print(echantillon.get_resultats())
-    print(echantillon2.get_resultats())
-
+    for indice in range (len(echantillon.get_resultats()['Marqueur'])):
+        print(echantillon.get_resultats()['Marqueur'][indice], ": ", echantillon.get_resultats()['Détails M/F'][indice])
+    print(echantillon.get_contamine())
+    print(echantillon.get_conclusion())

@@ -45,6 +45,7 @@ class Echantillon:
         self.seuil_hauteur = seuil_hauteur
         self.concordance_mere_foet = None
         self.concordance_pere_foet = None
+        #self.echelle_allelique = self.get_echelle_allelique("echelleAlleliquePP16.txt")
 
     def set_seuil_nbre_marqueurs(self, nb):
         """ Set seuil_nbre_marqueurs
@@ -89,7 +90,6 @@ class Echantillon:
         for marqueur in marqueurs:
             # check if the mother is homozygote
             if len(self.mere.data[marqueur]["Allele"]) == 1:
-                print(self.mere.data[marqueur]["Allele"])
                 self.foetus.data[marqueur]["détails"] = "Mere homozygote"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
             # check meme alleles que la mere
@@ -137,17 +137,22 @@ class Echantillon:
         else:
             self.conclusion = [nonconta, conta, round(valconta/conta, 2)]
         
-        if conta > self.seuil_nbre_marqueurs:
-            self.contamine = True
+        if conta >= self.seuil_nbre_marqueurs:
+            if self.conclusion[2] == "MAJEUR":
+                self.contamine = True
+            elif self.conclusion[2] >= 5:
+                self.contamine = True
+            else:
+                self.contamine = False
         else:
             self.contamine = False
 
-
     def compute_heterozygote_contamination(self, marqueur):
-        pic_pere = set(self.foetus.data[marqueur]["Allele"]) -set(self.mere.data[marqueur]["Allele"])
+        pic = list(set(self.foetus.data[marqueur]["Allele"]) -set(self.mere.data[marqueur]["Allele"]))[0]
+        pic_pere = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(pic)]
 
         pic1 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][0])]
-        pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])] = min(self.foetus.data[marqueur]["Hauteur"])
+        pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])]
 
         if abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2) :
             contaminant = min(pic1, pic2)
@@ -205,9 +210,21 @@ class Echantillon:
                 list_alleles.append("")
         return list_alleles
 
+def allele_minus_one(self, marqueur, allele):
+    return self.echelle[marqueur][self.echelle[marqueur].index(allele) - 1]
+
 def common_element(list1,list2):
     list1_set = set(list1)
     list2_set = set(list2)
     if len(list1_set.intersection(list2_set)) > 0:
         return True
     return False
+
+def get_echelle_allelique(self, path):
+    echelle = {}
+    with open(path, 'r') as FILE:
+        lines = FILE.readlines()
+    FILE.close()
+
+    for num_line in range(0, len(lines), 2):
+        echelle[lines[num_line]] = lines[num_line + 1]
