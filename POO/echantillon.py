@@ -84,35 +84,33 @@ class Echantillon:
     def analyse_marqueur(self):
         """
         """
-        for marqueur in self.foetus.data.keys():
-            # Gestion a part de l'amelogenine - marqueur sexuel
-            if marqueur == "AMEL":
-                self.foetus.data[marqueur]["détails"] = ""
-                self.foetus.data[marqueur]["conclusion"] = ""
+        marqueurs = list(self.foetus.data)
+        marqueurs.remove('AMEL')
+        for marqueur in marqueurs:
+            # check if the mother is homozygote
+            if len(self.mere.data[marqueur]["Allele"]) == 1:
+                print(self.mere.data[marqueur]["Allele"])
+                self.foetus.data[marqueur]["détails"] = "Mere homozygote"
+                self.foetus.data[marqueur]["conclusion"] = "Non informatif"
+            # check meme alleles que la mere
+            elif sorted(self.foetus.data[marqueur]["Allele"]) == sorted(self.mere.data[marqueur]["Allele"]) :
+                self.compute_homozygote_contamination(marqueur)
             # check allele dans echo a -1 de la mere
             elif common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], self.mere.data[marqueur]["Allele"]):
                 # allele du foetus dans l'echo de la mere
                 self.foetus.data[marqueur]["détails"] = "Echo"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
-            # check if the mother is homozygote
-            elif len(self.mere.data[marqueur]["Allele"]) == 1:
-                self.foetus.data[marqueur]["détails"] = "Mere homozygote"
-                self.foetus.data[marqueur]["conclusion"] = "Non informatif"
             else:
                 if len(self.foetus.data[marqueur]["Allele"]) == 3:
                     self.foetus.data[marqueur]["conclusion"] = "Contaminé"
-                    self.foetus.data[marqueur]["conclusion"] = self.compute_heterozygote_contamination(marqueur)
+                    self.compute_heterozygote_contamination(marqueur)
                 elif len(self.foetus.data[marqueur]["Allele"]) == 1:
                     self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
                     self.foetus.data[marqueur]["détails"] = ""
                 elif len(self.foetus.data[marqueur]["Allele"]) == 2:
-                    # check alleles sembles mere
-                    if self.foetus.data[marqueur]["Allele"].sort() == self.mere.data[marqueur]["Allele"].sort() :
-                        self.foetus.data[marqueur]["conclusion"] = self.compute_homozygote_contamination(marqueur)
                     # Foetus htz non conta
-                    else:
-                        self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
-                        self.foetus.data[marqueur]["détails"] = ""
+                    self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
+                    self.foetus.data[marqueur]["détails"] = ""
                 else:
                        self.foetus.data[marqueur]["conclusion"] = "Cas non envisagé"
                        self.foetus.data[marqueur]["détails"] = "Foetus: %s, Mere: %s"%(", ".join(map(str, self.foetus.data[marqueur]["Allele"])), ", ".join(map(str, self.mere.data[marqueur]["Allele"])))
@@ -123,12 +121,12 @@ class Echantillon:
         nonconta = 0
         valconta = 0
         # Nb de marqueurs informatifs non contamines
-        for marqueur in self.foetus.data.keys():
+        for marqueur in marqueurs:
             if self.foetus.data[marqueur]["conclusion"] == "Non contaminé":
                 nonconta += 1
             elif self.foetus.data[marqueur]["conclusion"] == "Contaminé":
                 conta += 1
-                if len(self.foetus.data[marqueur]["détails"]) == 2:
+                if type(self.foetus.data[marqueur]["détails"]) == list:
                     contamajeur = True
                 else:
                     valconta += self.foetus.data[marqueur]["détails"]
@@ -149,16 +147,16 @@ class Echantillon:
         pic_pere = set(self.foetus.data[marqueur]["Allele"]) -set(self.mere.data[marqueur]["Allele"])
 
         pic1 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][0])]
-        pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])]
+        pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])] = min(self.foetus.data[marqueur]["Hauteur"])
 
-        if abs(pic1 - pic2) > (1 - self.seuil_hauteur) :
+        if abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2) :
             contaminant = min(pic1, pic2)
             self.foetus.data[marqueur]["détails"] = round((contaminant / (contaminant + pic_pere)) * 100, 2)
         else :
             self.foetus.data[marqueur]["détails"] = [round((pic1 / (pic1 + pic_pere)) * 100,2), round((pic2 / (pic2 + pic_pere)) * 100, 2)]
         
     def compute_homozygote_contamination(self, marqueur):
-        if abs(self.foetus.data[marqueur]["Hauteur"][0] - self.foetus.data[marqueur]["Hauteur"][1]) > (1 - self.seuil_hauteur) :
+        if abs(self.foetus.data[marqueur]["Hauteur"][0] - self.foetus.data[marqueur]["Hauteur"][1]) > (1 - self.seuil_hauteur) * max(*self.foetus.data[marqueur]['Hauteur']) :
             contaminant = min(self.foetus.data[marqueur]["Hauteur"])
             autre = max(self.foetus.data[marqueur]["Hauteur"])
             self.foetus.data[marqueur]["détails"] = round(((2 * contaminant) / (contaminant + autre)) * 100, 2)
@@ -171,14 +169,17 @@ class Echantillon:
         """
         Dictionnary  of all results
         """
+       
+        marqueurs = list(self.foetus.data)
+        marqueurs.remove("AMEL")
         if self.concordance_mere_foet:
-            resultat = {"Marqueur": self.foetus.data.keys(), "Conclusion": [ self.foetus.data[marqueur]["conclusion"] for marqueur in self.foetus.data.keys() ], "Détails M/F": [ self.foetus.data[marqueur]["détails"] for marqueur in self.foetus.data.keys() ]}
+            resultat = {"Marqueur": marqueurs, "Conclusion": [ self.foetus.data[marqueur]["conclusion"] for marqueur in marqueurs ], "Détails M/F": [ self.foetus.data[marqueur]["détails"] for marqueur in marqueurs ]}
         else:
             if self.pere:
                 if self.concordance_pere_foet:
-                    resultat = {"Marqueur": self.foetus.data.keys(), "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in self.foetus.data.keys() ], "Détails M/F": self.get_notconcordant(0)}
+                    resultat = {"Marqueur": marqueurs, "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in marqueurs ], "Détails M/F": self.get_notconcordant(0)}
                 else:
-                    resultat = {"Marqueur": [ self.foetus.data.keys() ], "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in self.foetus.data.keys() ], "Détails M/F": self.get_notconcordant(0), "Concordance Pere/Foetus": [ self.foetus.data[marqueur]["concordance"][1] for marqueur in self.foetus.data.keys() ], "Détails P/F": self.get_notconcordant(1)}
+                    resultat = {"Marqueur": [ marqueurs ], "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in marqueurs ], "Détails M/F": self.get_notconcordant(0), "Concordance Pere/Foetus": [ self.foetus.data[marqueur]["concordance"][1] for marqueur in marqueurs ], "Détails P/F": self.get_notconcordant(1)}
         return resultat
 
     def get_id(self):
