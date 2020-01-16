@@ -42,11 +42,11 @@ def lecture_fichier(path_data_frame):
 
     logger.info("Chargement des données")
     # Check the presence of TPOS and TNEG
-    if donnees[donnees["Sample Name"].str.contains(r'T.*POS', regex=True) == True].shape[0] == 0:
+    if donnees[donnees["Sample Name"].str.contains(r'T.*POS|T\+', regex=True) == True].shape[0] == 0:
         logger.error("Temoin positif absent", exc_info=True)
         # 2: T POS absent
         return 2
-    elif donnees[donnees["Sample Name"].str.contains(r'T.*NEG', regex=True) == True].shape[0] == 0:
+    elif donnees[donnees["Sample Name"].str.contains(r'T.*NEG|T\-|BLANC|BLC', regex=True) == True].shape[0] == 0:
         logger.error("Temoin negatif absent", exc_info=True)
         # 3: T NEG absent
         return 3
@@ -58,7 +58,11 @@ def lecture_fichier(path_data_frame):
         # 4: Nombre de lignes incorrect
         logger.error("Nombre de lignes incompatible", exc_info=True)
         return 4
-      
+
+    # Normalisation TPOS and TNEG name
+    donnees.loc[donnees["Sample Name"].str.contains(r'T.*POS|T\+', regex=True) == True, "Sample Name"] = "TPOS"
+    donnees.loc[donnees["Sample Name"].str.contains(r'T.*NEG|T\-|BLANC|BLC', regex=True)== True, "Sample Name"] = "TNEG"
+
     # Get data
     date_echantillon = re.search("(\d{4}-\d{2}-\d{2})", donnees["Sample File"].values[0]).group()
     for i in range(iterateur):
@@ -108,9 +112,22 @@ if __name__ == "__main__":
     file_path = sys.argv[1]
     print(file_path)
     echantillon = lecture_fichier(file_path)
+    # Check temoins
+    checktpos = echantillon.tpos.check()
+    checktneg = echantillon.tneg.check()
+    if checktpos == []:
+        print("Temoin positif : validé")
+    else:
+        print("Témoin positif : NON VALIDE", checktpos)
+    if checktneg == []:
+        print("Temoin négatif : validé")
+    else:
+        print("Témoin négatif : NON VALIDE", checktneg)
+    # Check concordance
     val = concordance_ADN(echantillon)
     print(echantillon.concordance_pere_foet)
     print(echantillon.concordance_mere_foet)
+    # Do analyse
     echantillon.analyse_marqueur()
     for indice in range (len(echantillon.get_resultats()['Marqueur'])):
         print(echantillon.get_resultats()['Marqueur'][indice], ": ", echantillon.get_resultats()['Détails M/F'][indice])
