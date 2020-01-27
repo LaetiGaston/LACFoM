@@ -92,38 +92,52 @@ class Echantillon:
             if len(self.mere.data[marqueur]["Allele"]) == 1:
                 self.foetus.data[marqueur]["détails"] = "Mere homozygote"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
-            # Foetus 3 alleles : conta ou echo
-            elif len(self.foetus.data[marqueur]["Allele"]) == 3:
-                self.compute_heterozygote_contamination(marqueur)
-            # check meme alleles que la mere
-            elif sorted(self.foetus.data[marqueur]["Allele"]) == sorted(self.mere.data[marqueur]["Allele"]) :
-                self.compute_homozygote_contamination(marqueur)
-            # check allele dans echo a -1 de la mere si foetus 2 alleles
-            elif common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], self.mere.data[marqueur]["Allele"]):
-                # F: 2 alleles dont 1 dans l'echo 
-                if len(self.foetus.data[marqueur]["Allele"]) == 2 and len(set([ x-1 for x in self.foetus.data[marqueur]["Allele"] ]).intersection(set(self.mere.data[marqueur]["Allele"]))) == 1:
-                    tmp = list(set(self.foetus.data[marqueur]["Allele"])^set(self.mere.data[marqueur]["Allele"]))
-                    if abs(tmp[0]-tmp[1]) == 1:
-                        self.foetus.data[marqueur]["détails"] = "Echo"
-                        self.foetus.data[marqueur]["conclusion"] = "Non informatif"
+            # Alleles mere inclus dans alleles foetus:
+            elif len(set(self.foetus.data[marqueur]["Allele"]).intersection(set(self.mere.data[marqueur]["Allele"]))) == 2:
+                pic1 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][0])]
+                pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])]
+                # diff entre les 2 pics sup a 1-seuil
+                if abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2) :
+                    # vérification de l'echo
+                    contaminant = min(pic1, pic2)
+                    pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
+                    # Test petit pic dans echo
+                    ECHO = False
+                    for pic_foetus in self.foetus.data[marqueur]["Allele"]:
+                        if pic_foetus - pic_conta == 1:
+                            ECHO = True
+                            self.foetus.data[marqueur]["conclusion"] = "Non informatif"
+                            self.foetus.data[marqueur]["détails"] = "Echo"
+                            break
+                    if not ECHO:
+                        self.foetus.data[marqueur]["conclusion"] = "Contaminé"
+                        # si 3 pic conta htz sinon conta hmz
+                        if len(self.foetus.data[marqueur]["Allele"]) == 3:
+                            pic = list(set(self.foetus.data[marqueur]["Allele"]) - set(self.mere.data[marqueur]["Allele"]))[0]
+                            pic_pere = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(pic)]
+                            self.foetus.data[marqueur]["détails"] = round((contaminant / (contaminant + pic_pere)) * 100, 2)
+                        else:
+                            autre = max(self.foetus.data[marqueur]["Hauteur"])
+                            self.foetus.data[marqueur]["détails"] = round(((2 * contaminant) / (contaminant + autre)) * 100, 2)
+                else:
+                    # Conta majeur
+                    if len(self.foetus.data[marqueur]["Allele"]) == 3:
+                        pic = list(set(self.foetus.data[marqueur]["Allele"]) - set(self.mere.data[marqueur]["Allele"]))[0]
+                        pic_pere = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(pic)]
+                        self.foetus.data[marqueur]["conclusion"] = "Contaminé"
+                        self.foetus.data[marqueur]["détails"] = [round((pic1 / (pic1 + pic_pere)) * 100,2), round((pic2 / (pic2 + pic_pere)) * 100, 2)]
+                    # Meme allele que la mere 
                     else:
-                        self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
-                        self.foetus.data[marqueur]["détails"] = ""
-                else:
-                    # allele du foetus dans l'echo de la mere
-                    self.foetus.data[marqueur]["détails"] = "Echo"
-                    self.foetus.data[marqueur]["conclusion"] = "Non informatif"
+                        self.foetus.data[marqueur]["conclusion"] = "Non informatif"
+                        self.foetus.data[marqueur]["détails"] = "Même allèles que la mère"
+
+            # check allele non herite mere dans echo a -1 de la mere [reste plus que les cas 2 alleles]
+            elif common_element([ x-1 for x in list(set(self.foetus.data[marqueur]["Allele"]).difference(set(self.mere.data[marqueur]["Allele"]))) ], list(set(self.mere.data[marqueur]["Allele"]).difference(set(self.foetus.data[marqueur]["Allele"])))):
+                self.foetus.data[marqueur]["détails"] = "Echo"
+                self.foetus.data[marqueur]["conclusion"] = "Non informatif"
             else:
-                if len(self.foetus.data[marqueur]["Allele"]) == 1:
-                    self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
-                    self.foetus.data[marqueur]["détails"] = ""
-                elif len(self.foetus.data[marqueur]["Allele"]) == 2:
-                    # Foetus htz non conta
-                    self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
-                    self.foetus.data[marqueur]["détails"] = ""
-                else:
-                       self.foetus.data[marqueur]["conclusion"] = "Cas non envisagé"
-                       self.foetus.data[marqueur]["détails"] = "Foetus: %s, Mere: %s"%(", ".join(map(str, self.foetus.data[marqueur]["Allele"])), ", ".join(map(str, self.mere.data[marqueur]["Allele"])))
+                self.foetus.data[marqueur]["conclusion"] = "Non contaminé"
+                self.foetus.data[marqueur]["détails"] = ""
 
         # Compute conclusion
         contamajeur = False
