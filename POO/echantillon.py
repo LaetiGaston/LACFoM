@@ -88,6 +88,7 @@ class Echantillon:
         marqueurs = list(self.foetus.data)
         marqueurs.remove('AMEL')
         for marqueur in marqueurs:
+            #print("MARQIEUUR: ", marqueur)
             # check if the mother is homozygote
             if len(self.mere.data[marqueur]["Allele"]) == 1:
                 self.foetus.data[marqueur]["détails"] = "Mere homozygote"
@@ -97,14 +98,17 @@ class Echantillon:
                 pic1 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][0])]
                 pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])]
                 # diff entre les 2 pics sup a 1-seuil
+                #print("pic1:",pic1,"pic2:", pic2)
                 if abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2) :
                     # vérification de l'echo
                     contaminant = min(pic1, pic2)
                     pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
                     # Test petit pic dans echo
                     ECHO = False
+                    #print("conta",contaminant,pic_conta)
                     for pic_foetus in self.foetus.data[marqueur]["Allele"]:
-                        if pic_foetus - pic_conta == 1:
+                        #print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
+                        if round(abs(pic_foetus - pic_conta),2) == 1.0:
                             ECHO = True
                             self.foetus.data[marqueur]["conclusion"] = "Non informatif"
                             self.foetus.data[marqueur]["détails"] = "Echo"
@@ -185,7 +189,7 @@ class Echantillon:
             pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
             # Test petit pic dans echo
             for pic_foetus in [pic, self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(max(pic1, pic2))]]:
-                if pic_foetus - pic_conta == 1:
+                if round(abs(pic_foetus - pic_conta),2) == 1.0:
                     self.foetus.data[marqueur]["conclusion"] = "Non informatif"
                     self.foetus.data[marqueur]["détails"] = "Echo"
                     break
@@ -204,7 +208,7 @@ class Echantillon:
             contaminant = min(self.foetus.data[marqueur]["Hauteur"])
             autre = max(self.foetus.data[marqueur]["Hauteur"])
             # contaminant à n-1 du deuxieme pic donc echo 
-            if abs(self.foetus.data[marqueur]["Allele"][0] - self.foetus.data[marqueur]["Allele"][1]) == 1 and self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)] < self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(autre)]:
+            if round(abs(self.foetus.data[marqueur]["Allele"][0] - self.foetus.data[marqueur]["Allele"][1]),2) == 1.0 and self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)] < self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(autre)]:
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
                 self.foetus.data[marqueur]["détails"] = "Echo"
             else:
