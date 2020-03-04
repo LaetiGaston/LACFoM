@@ -5,7 +5,9 @@
 
 import copy
 import logging
+import sys
 import os
+import time
 from os.path import sep, expanduser, dirname, join
 
 import kivy
@@ -17,15 +19,20 @@ from kivy.factory import Factory
 from kivy.garden.filebrowser import FileBrowser
 from kivy.properties import *
 from kivy.properties import ListProperty
+from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.tabbedpanel import TabbedPanelHeader
+from kivy.uix.checkbox import CheckBox
 from kivy.utils import platform
+from functools import partial
 
 from datetime import datetime
 from time import strftime
@@ -393,6 +400,149 @@ class ResAnalyse(BoxLayout):
             self.ids.TButtonNonContamine.color = [130 / 256, 130 / 256, 130 / 256, 1]
 
 
+class getInput(Popup):
+    def __init__(self, data, **kwargs):
+            Popup.__init__(self, **kwargs)
+            self.data = data
+            self.GridLayout = GridLayout(cols=5, rows=5)
+
+            self.checkBox_a = CheckBox(group="mother")
+            self.checkBox_a2 = CheckBox(group="mother")
+            self.checkBox_a3 = CheckBox(group = "mother")
+
+            self.checkBox_b = CheckBox(group="foetus")
+            self.checkBox_b2 = CheckBox(group="foetus")
+            self.checkBox_b3 = CheckBox(group = "foetus")
+
+            self.checkBox_c = CheckBox(group="pere")
+            self.checkBox_c2 = CheckBox(group="pere")
+            self.checkBox_c3 = CheckBox(group="pere")
+
+            self.LabelEmpty = Label(text="")
+            self.GridLayout.add_widget(self.LabelEmpty)
+
+            self.LabelMother = Label(text="Mère")
+            self.GridLayout.add_widget(self.LabelMother)
+
+            self.LabelFoetus = Label(text="Foetus")
+            self.GridLayout.add_widget(self.LabelFoetus)
+
+            self.LabelFather = Label(text="Père")
+            self.GridLayout.add_widget(self.LabelFather)
+
+            self.GridLayout.add_widget(Label(text=""))
+
+            self.LabelID1 = Label(text=data[0])
+            self.GridLayout.add_widget(self.LabelID1)
+            
+            self.GridLayout.add_widget(self.checkBox_a)
+
+            self.GridLayout.add_widget(self.checkBox_a2)
+            self.GridLayout.add_widget(self.checkBox_a3)
+            self.GridLayout.add_widget(Label(text=""))
+            
+            self.LabelID2 = Label(text=data[1])
+            self.GridLayout.add_widget(self.LabelID2)
+
+            self.GridLayout.add_widget(self.checkBox_b)
+            self.GridLayout.add_widget(self.checkBox_b2)
+            self.GridLayout.add_widget(self.checkBox_b3)
+            self.GridLayout.add_widget(Label(text=""))
+
+            self.LabelID3 = Label(text=data[2])
+            self.GridLayout.add_widget(self.LabelID3)
+
+            self.GridLayout.add_widget(self.checkBox_c)
+            self.GridLayout.add_widget(self.checkBox_c2)
+            self.GridLayout.add_widget(self.checkBox_c3)
+            self.GridLayout.add_widget(Label(text=""))
+            self.GridLayout.add_widget(Label(text=""))
+            self.GridLayout.add_widget(Label(text=""))
+            self.GridLayout.add_widget(Label(text=""))
+            self.GridLayout.add_widget(Label(text=""))
+            
+            self.cancelButton = Button()
+            self.cancelButton.text = 'Cancel'
+            self.cancelButton.size_hint = (0.2,0.2)
+
+            self.okButton = Button()
+            self.okButton.text="OK"
+            self.okButton.size_hint=(0.20,0.20)
+
+            self.GridLayout.add_widget(self.okButton)
+
+            self.title="Identification des individus"
+            self.content = self.GridLayout
+            self.size_hint=(0.9, 0.9)
+            self.auto_dismiss=False
+            
+            self.cancelButton.bind(on_press = self.cancelButtonPress)
+            self.okButton.bind(on_press = self.okButtonPress)
+
+            self.samples = {}
+
+            self.notDone = True
+
+
+    def getResult(self):
+        print("in get results du popup")
+        #self.open()
+        while True:
+            print("waiting for chackbox selection")
+        print("after open popup")
+
+    def onClose(self):
+            return
+
+    def okButtonPress(self, instance):
+        print(" ****************** okButtonPressed ***************************")
+        ID1 = [self.checkBox_a.active, self.checkBox_b.active, self.checkBox_c.active]
+        ID2 = [self.checkBox_a2.active, self.checkBox_b2.active, self.checkBox_c2.active]
+        ID3 = [self.checkBox_a3.active, self.checkBox_b3.active, self.checkBox_c3.active]
+        print(ID1)
+        print(ID2)
+        print(ID3)
+        if ID1.count(True) == 2 or ID2.count(True) == 2 or ID3.count(True) == 2:
+            print("Deux echantillons meme origine")
+            self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"),
+                            size_hint=(0.3, 0.3))
+            self._popupEr.open()
+        elif ID1.count(True) == 0 or ID2.count(True) == 0 or ID3.count(True) == 0:
+            print("Un echantillon n'a pas été attribué")
+            self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"),
+                            size_hint=(0.3, 0.3))
+            self._popupEr.open()
+        else:
+            self.samples["mother"] = self.data[ID1.index(True)]
+            self.samples["foetus"] = self.data[ID2.index(True)]
+            self.samples["father"] = self.data[ID3.index(True)]
+            print(self.samples)
+            print("Quit fonction okButton Pressed")
+            self.notDone = False
+            self.dismiss()
+        return
+
+    def getSamples(self):
+        self.notDone = True
+        self.open()          
+        self.rootWindow = self.get_root_window()
+        
+        while self.notDone :
+            #sys.stdout.write("Sleeping\n")
+            time.sleep(0.01)
+            self.rootWindow._mainloop()
+        
+        if self.samples == {}:
+            return ""
+        else:    
+            return self.samples
+
+    def cancelButtonPress(self):
+        sys.stdout.write('Cancel button was pressed \n')
+        self.dismiss()
+        self.notDone = False
+        return
+
 class EcranFctMethod(GridLayout):
     loadfile = ObjectProperty(None)
     savefile = ObjectProperty(None)
@@ -451,14 +601,16 @@ class EcranFctMethod(GridLayout):
     def _fbrowser_success(self, instance):
         print("sucess")
         if self.load(instance.path, instance.selection):
-            self.panel.manager.current = "ecran_principale"
-            self.memory_path = instance.path
+            if self.compute():
+                self.panel.manager.current = "ecran_principale"
+                self.memory_path = instance.path
 
     def _fbrowser_submit(self, instance):
         print("submit")
         if self.load(instance.path, instance.selection):
-            self.panel.manager.current = "ecran_principale"
-            self.memory_path = instance.path
+            if self.compute():
+                self.panel.manager.current = "ecran_principale"
+                self.memory_path = instance.path
 
     def retour_conclusion(self, retour):
         self.retour = retour
@@ -479,7 +631,35 @@ class EcranFctMethod(GridLayout):
                 """
         try:
             # lecture du fichier et traitement
-            Echantillon = traitement.lecture_fichier(os.path.join(path, filename[0]))
+            data = traitement.lecture_fichier(os.path.join(path, filename[0]))
+            if not isinstance(data, list):
+                self._popupEr = Popup(title="Erreur", content=Label(text=Echantillon),
+                            size_hint=(0.3, 0.3))
+                self._popupEr.open()
+                return
+
+            myPopupLoad = getInput(data[0])
+            #myPopupLoad.bind(on_dismiss=self.compute())
+            #myPopupLoad.open()
+            self.dictsamples = myPopupLoad.getSamples()
+            print("Get samples: ")
+            print(self.dictsamples)
+            self.data = data[1]
+            self.instance_path = path
+            self.filename = filename
+        except Exception as e:
+
+            logger.error("Chargement données impossible", exc_info=True)
+
+            return False
+        logger.info("Chargement des données réussi")
+        #self.compute()
+        return True
+            
+
+    def compute(self):
+        try:
+            Echantillon = traitement.computedata(self.dictsamples, self.data)
             self.InfoParametre["Echantillon"]=Echantillon
             if not isinstance(Echantillon, traitement.Echantillon):
                 self._popupEr = Popup(title="Erreur", content=Label(text=Echantillon),
@@ -499,8 +679,6 @@ class EcranFctMethod(GridLayout):
             logger.info("Fonction analyse_données réussi")
             # récupération et attribution de données
             self.titre = self.cpt_onglets(Echantillon.get_id())
-
-            self.instance_path = path
             nv_onglets = CloseableHeader(text1=self.titre + "  ", panel=self.ids.les_onglets,
                                          supr_onglets=self.supr_onglets)
 
@@ -522,8 +700,8 @@ class EcranFctMethod(GridLayout):
                 self.InfoParametre["num_pere"] = Echantillon.pere.ID
                 self.InfoParametre["pres_pere"] = "OUI"
             self.InfoParametre["num_foetus"] = Echantillon.foetus.ID
-            self.InfoParametre["filename"] = filename
-            self.InfoParametre["path"] = path
+            self.InfoParametre["filename"] = self.filename
+            self.InfoParametre["path"] = self.instance_path
             self.InfoParametre["nb"] = str(self.nb)
             self.InfoParametre["hauteur"] = self.hauteur
             contenu_res = ResAnalyse(
@@ -547,11 +725,11 @@ class EcranFctMethod(GridLayout):
             self.cpt = self.cpt + 1
 
         except Exception as e:
-
-            logger.error("Chargement données/Traitement impossible", exc_info=True)
+            
+            logger.error("Traitement des données impossible", exc_info=True)
 
             return False
-        logger.info("Chargement et traitement des données réussi")
+        logger.info("Traitement des données réussi")
 
         return True
 
@@ -659,8 +837,9 @@ class EcranFctMethod(GridLayout):
             self.hauteur = p3
             self.emetteur = p4
             self.entite = p5
-            self.load(self.ids.les_onglets.current_tab.content.InfoParametre["path"],
-                      self.ids.les_onglets.current_tab.content.InfoParametre["filename"])
+            #self.load(self.ids.les_onglets.current_tab.content.InfoParametre["path"],
+            #          self.ids.les_onglets.current_tab.content.InfoParametre["filename"])
+            self.compute()
             self.dismiss_popup()
         except Exception as e:
             logger.error("Changement paramètres échoué nb(attendu)=entier,nb(indiqué)= " + str(

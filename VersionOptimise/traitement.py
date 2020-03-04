@@ -68,7 +68,7 @@ def lecture_fichier(path_data_frame):
     allsamples.remove("TPOS")
     allsamples.remove("TNEG")
 
-    return allsamples, donnees
+    return [allsamples, donnees]
 
 def computedata(samples, donnees):
     """
