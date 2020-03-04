@@ -404,22 +404,30 @@ class getInput(Popup):
     def __init__(self, data, **kwargs):
             Popup.__init__(self, **kwargs)
             self.data = data
-            self.GridLayout = GridLayout(cols=5, rows=5)
+            self.father = len(self.data) == 3 and True or False
+            
+            self.mainGridLayout = GridLayout(cols=3)
+
+            if self.father:
+                self.GridLayout = GridLayout(cols=4, rows=4)
+            else:
+                self.GridLayout = GridLayout(cols=3, rows=3)
 
             self.checkBox_a = CheckBox(group="mother")
             self.checkBox_a2 = CheckBox(group="mother")
-            self.checkBox_a3 = CheckBox(group = "mother")
 
             self.checkBox_b = CheckBox(group="foetus")
             self.checkBox_b2 = CheckBox(group="foetus")
-            self.checkBox_b3 = CheckBox(group = "foetus")
 
-            self.checkBox_c = CheckBox(group="pere")
-            self.checkBox_c2 = CheckBox(group="pere")
-            self.checkBox_c3 = CheckBox(group="pere")
+            if self.father:
+                self.checkBox_a3 = CheckBox(group = "mother")
+                self.checkBox_b3 = CheckBox(group = "foetus")
+                self.checkBox_c = CheckBox(group="pere")
+                self.checkBox_c2 = CheckBox(group="pere")
+                self.checkBox_c3 = CheckBox(group="pere")
 
-            self.LabelEmpty = Label(text="")
-            self.GridLayout.add_widget(self.LabelEmpty)
+            #line1
+            self.GridLayout.add_widget(Label(text=""))
 
             self.LabelMother = Label(text="Mère")
             self.GridLayout.add_widget(self.LabelMother)
@@ -427,52 +435,64 @@ class getInput(Popup):
             self.LabelFoetus = Label(text="Foetus")
             self.GridLayout.add_widget(self.LabelFoetus)
 
-            self.LabelFather = Label(text="Père")
-            self.GridLayout.add_widget(self.LabelFather)
+            if self.father:
+                self.LabelFather = Label(text="Père")
+                self.GridLayout.add_widget(self.LabelFather)
 
-            self.GridLayout.add_widget(Label(text=""))
-
-            self.LabelID1 = Label(text=data[0])
+            #line2
+            self.LabelID1 = Label(text=self.data[0])
             self.GridLayout.add_widget(self.LabelID1)
             
             self.GridLayout.add_widget(self.checkBox_a)
 
             self.GridLayout.add_widget(self.checkBox_a2)
-            self.GridLayout.add_widget(self.checkBox_a3)
-            self.GridLayout.add_widget(Label(text=""))
             
-            self.LabelID2 = Label(text=data[1])
+            if self.father:
+                self.GridLayout.add_widget(self.checkBox_a3)
+
+            #line3
+            self.LabelID2 = Label(text=self.data[1])
             self.GridLayout.add_widget(self.LabelID2)
 
             self.GridLayout.add_widget(self.checkBox_b)
-            self.GridLayout.add_widget(self.checkBox_b2)
-            self.GridLayout.add_widget(self.checkBox_b3)
-            self.GridLayout.add_widget(Label(text=""))
-
-            self.LabelID3 = Label(text=data[2])
-            self.GridLayout.add_widget(self.LabelID3)
-
-            self.GridLayout.add_widget(self.checkBox_c)
-            self.GridLayout.add_widget(self.checkBox_c2)
-            self.GridLayout.add_widget(self.checkBox_c3)
-            self.GridLayout.add_widget(Label(text=""))
-            self.GridLayout.add_widget(Label(text=""))
-            self.GridLayout.add_widget(Label(text=""))
-            self.GridLayout.add_widget(Label(text=""))
-            self.GridLayout.add_widget(Label(text=""))
             
+            self.GridLayout.add_widget(self.checkBox_b2)
+            
+            if self.father:
+                self.GridLayout.add_widget(self.checkBox_b3)
+            
+            #line4
+            if self.father:
+                self.LabelID3 = Label(text=self.data[2])
+                self.GridLayout.add_widget(self.LabelID3)
+
+                self.GridLayout.add_widget(self.checkBox_c)
+                
+                self.GridLayout.add_widget(self.checkBox_c2)
+                
+                self.GridLayout.add_widget(self.checkBox_c3)
+
+
+            self.mainGridLayout.add_widget(self.GridLayout)
+
             self.cancelButton = Button()
             self.cancelButton.text = 'Cancel'
-            self.cancelButton.size_hint = (0.2,0.2)
+            self.cancelButton.size_hint_x = None
+            self.cancelButton.size_hint_y = None
+            self.cancelButton.width = 100
+
+            self.mainGridLayout.add_widget(self.cancelButton)
 
             self.okButton = Button()
-            self.okButton.text="OK"
-            self.okButton.size_hint=(0.20,0.20)
+            self.okButton.text = "OK"
+            self.okButton.size_hint_x = None
+            self.okButton.size_hint_y = None
+            self.okButton.width = 100
 
-            self.GridLayout.add_widget(self.okButton)
+            self.mainGridLayout.add_widget(self.okButton)
 
             self.title="Identification des individus"
-            self.content = self.GridLayout
+            self.content = self.mainGridLayout
             self.size_hint=(0.9, 0.9)
             self.auto_dismiss=False
             
@@ -496,18 +516,20 @@ class getInput(Popup):
 
     def okButtonPress(self, instance):
         print(" ****************** okButtonPressed ***************************")
-        ID1 = [self.checkBox_a.active, self.checkBox_b.active, self.checkBox_c.active]
-        ID2 = [self.checkBox_a2.active, self.checkBox_b2.active, self.checkBox_c2.active]
-        ID3 = [self.checkBox_a3.active, self.checkBox_b3.active, self.checkBox_c3.active]
+        ID1 = [self.checkBox_a.active, self.checkBox_b.active]
+        ID2 = [self.checkBox_a2.active, self.checkBox_b2.active]
+        if self.father:
+            ID1.append(self.checkBox_c.active)
+            ID2.append(self.checkBox_c2.active)
+            ID3 = [self.checkBox_a3.active, self.checkBox_b3.active, self.checkBox_c3.active]
         print(ID1)
         print(ID2)
-        print(ID3)
-        if ID1.count(True) == 2 or ID2.count(True) == 2 or ID3.count(True) == 2:
+        if ID1.count(True) == 2 or ID2.count(True) == 2 or (self.father and ID3.count(True) == 2):
             print("Deux echantillons meme origine")
             self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"),
                             size_hint=(0.3, 0.3))
             self._popupEr.open()
-        elif ID1.count(True) == 0 or ID2.count(True) == 0 or ID3.count(True) == 0:
+        elif ID1.count(True) == 0 or ID2.count(True) == 0 or (self.father and ID3.count(True) == 0):
             print("Un echantillon n'a pas été attribué")
             self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"),
                             size_hint=(0.3, 0.3))
@@ -515,7 +537,8 @@ class getInput(Popup):
         else:
             self.samples["mother"] = self.data[ID1.index(True)]
             self.samples["foetus"] = self.data[ID2.index(True)]
-            self.samples["father"] = self.data[ID3.index(True)]
+            if self.father:
+                self.samples["father"] = self.data[ID3.index(True)]
             print(self.samples)
             print("Quit fonction okButton Pressed")
             self.notDone = False
@@ -537,7 +560,7 @@ class getInput(Popup):
         else:    
             return self.samples
 
-    def cancelButtonPress(self):
+    def cancelButtonPress(self, instance):
         sys.stdout.write('Cancel button was pressed \n')
         self.dismiss()
         self.notDone = False
