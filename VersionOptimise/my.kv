@@ -177,7 +177,106 @@ ScreenManagement:
                 tab_width: None
                 do_default_tab: False
 
+<GetIdentity>:
+    GridLayout:
+        cols:3
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255, 1)
 
+<SubWidgetFather>:
+    GridLayout:
+        cols:4
+        rows:4
+        Label:
+            text:""
+        Label:
+            text:"Mère"
+            color: [256, 256, 256, 1]
+        Label:
+            text:"Foetus"
+            color: [256, 256, 256, 1]
+        Label:
+            text:"Père"
+            color: [256, 256, 256, 1]
+        Label:
+            text:root.data[0]
+            color: [256, 256, 256, 1]
+        CheckBox:
+            id:a1
+            group:"mother"
+        CheckBox:
+            id:a2
+            group:"mother"
+        CheckBox:
+            id:a3
+            group:"mother"
+        Label:
+            text:root.data[1]
+            color: [256, 256, 256, 1]
+        CheckBox:
+            id:b1
+            group:"foetus"
+        CheckBox:
+            id:b2
+            group:"foetus"
+        CheckBox:
+            id:b3
+            group:"foetus"
+        Label:
+            text:root.data[2]
+            color: [256, 256, 256, 1]
+        CheckBox:
+            id:c1
+            group:"father"
+        CheckBox:
+            id:c2
+            group:"father"
+        CheckBox:
+            id:c3
+            group:"father"
+
+<SubWidgetNoFather>:
+    GridLayout:
+        cols:3
+        rows:3
+        Label:
+            text:""
+        Label:
+            text:"Mère"
+            color: [256, 256, 256, 1]
+        Label:
+            text:"Foetus"
+            color: [256, 256, 256, 1]
+        Label:
+            text:root.data[0]
+            color: [256, 256, 256, 1]
+        CheckBox:
+            id:a1
+            group:"mother"
+        CheckBox:
+            id:a2
+            group:"mother"
+        Label:
+            text:root.data[1]
+            color: [256, 256, 256, 1]
+        CheckBox:
+            id:b1
+            group:"foetus"
+        CheckBox:
+            id:b2
+            group:"foetus"
+
+<SubwidgetButton>:            
+    Button:
+        id:Button
+        background_normal: ''
+        background_color: (75/255, 127/255, 209/255,1)
+        color: [0.949, 0.945, 0.945, 1]
+        text:root.text
+        size_hint_x: None
+        size_hint_y: None
+        width: 100
 
 <ParametreDialog>:
     BoxLayout:
