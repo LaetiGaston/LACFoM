@@ -150,75 +150,77 @@ class LoadDialog(FloatLayout):
         selected_item = args[0].selection[0].text
         self.ids.file_chooser.path = selected_item
 
-class SubWidgetFather(FloatLayout):
-    data = ObjectProperty(None)
+#class SubWidgetFather(FloatLayout):
+#    data = self.parent.data
 
-class SubWidgetNoFather(FloatLayout):
-    data = ObjectProperty(None)
 
-class SubWidgetButton(FloatLayout):
-    #text = ObjectProperty(None)
-    def __init__(self, text, *args):
-        self.text = text
+#class SubWidgetNoFather(FloatLayout):
+#    data = self.parent.data
 
-class GetIdentity(FloatLayout):
-    #data = ObjectProperty(None)
-    #father = ObjectProperty(None)
+#class SubWidgetButton(FloatLayout):
+#    #text = ObjectProperty(None)
+#    def __init__(self, text, *args):
+#        self.text = text
 
-    def __init__(self, data, father, *args):
-        super(GetIdentity, self).__init__(*args)
-        self.data = data
-        self.father = father
-        self._create_widget()
-
-    def _create_widget(self):
-        print("**** Data in widget ****")
-        print(self.father)
-        print(self.data)
-        print("************************")
-
-        if self.father:
-            self.tablewidget = SubWidgetFather(data=self.data)
-        else:
-            self.tablewidget = SubWidgetNoFather(data=self.data)
-
-        print(self.tablewidget)
-        self.add_widget(self.tablewidget)
-
-        self.cancelButton = SubWidgetButton("Cancel")
-        self.cancelButton.bind(on_press = self.cancelButtonPress)
-        self.add_widget(self.cancelButton)
-
-        self.okButton = SubWidgetButton("OK")
-        self.okButton.bind(on_press = self.okButtonPress)
-        self.add_widget(self.okButton)
-
-    def okButtonPress(self):
-        ID1 = [self.ids.a1.active, self.ids.a2.active]
-        ID2 = [self.ids.b1.active, self.ids.b2.active]
-        if self.father:
-            ID1.append(self.ids.a3.active)
-            ID2.append(self.ids.b3.active)
-            ID3 = [self.ids.c1.active, self.ids.c2.active, self.ids.c3.active]
-        if ID1.count(True) == 2 or ID2.count(True) == 2 or (self.father and ID3.count(True) == 2):
-            self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"), size_hint=(0.3, 0.3))
-            self._popupEr.open()
-        elif ID1.count(True) == 0 or ID2.count(True) == 0 or (self.father and ID3.count(True) == 0):
-            self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"), size_hint=(0.3, 0.3))
-            self._popupEr.open()
-        else:
-            self.dictsamples["mother"] = self.echantillons[ID1.index(True)]
-            self.dictsamples["foetus"] = self.echantillons[ID2.index(True)]
-            if self.father:
-                self.dictsamples["father"] = self.echantillons[ID3.index(True)]
-            #self.notDone = False
-            self.dismiss_popupID()
-        return
-
-    def cancelButtonPress(self, instance):
-        self.dismiss()
-        #Self.notDone = False
-        return
+#class GetIdentity(FloatLayout):
+#    #data = ObjectProperty(None)
+#    #father = ObjectProperty(None)
+#
+#    def __init__(self, **kwargs):
+#        data = kwargs.pop('data')
+#        father = kwargs.pop('father')
+#        #super(GetIdentity, self).__init__(**kwargs)
+#        #self.data = data
+#        #self.father = father
+#        self._create_widget(data, father)
+#
+#    def _create_widget(self, data, father):
+#        print("**** Data in widget ****")
+#        print(father)
+#        print(data)
+#        print("************************")
+#
+#        if father:
+#            self.tablewidget = SubWidgetFather()
+#        else:
+#            self.tablewidget = SubWidgetNoFather()
+#
+#        self.add_widget(self.tablewidget)
+#
+#        self.cancelButton = SubWidgetButton("Cancel")
+#        self.cancelButton.bind(on_press = self.cancelButtonPress)
+#        self.add_widget(self.cancelButton)
+#
+#        self.okButton = SubWidgetButton("OK")
+#        self.okButton.bind(on_press = self.okButtonPress(father))
+#        self.add_widget(self.okButton)
+#
+#    def okButtonPress(self, father):
+#        ID1 = [self.ids.a1.active, self.ids.a2.active]
+#        ID2 = [self.ids.b1.active, self.ids.b2.active]
+#        if father:
+#            ID1.append(self.ids.a3.active)
+#            ID2.append(self.ids.b3.active)
+#            ID3 = [self.ids.c1.active, self.ids.c2.active, self.ids.c3.active]
+#        if ID1.count(True) == 2 or ID2.count(True) == 2 or (father and ID3.count(True) == 2):
+#            self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"), size_hint=(0.3, 0.3))
+#            self._popupEr.open()
+#        elif ID1.count(True) == 0 or ID2.count(True) == 0 or (father and ID3.count(True) == 0):
+#            self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"), size_hint=(0.3, 0.3))
+#            self._popupEr.open()
+#        else:
+#            self.dictsamples["mother"] = self.echantillons[ID1.index(True)]
+#            self.dictsamples["foetus"] = self.echantillons[ID2.index(True)]
+#            if father:
+#                self.dictsamples["father"] = self.echantillons[ID3.index(True)]
+#            #self.notDone = False
+#            self.dismiss_popupID()
+#        return
+#
+#    def cancelButtonPress(self):
+#        self.dismiss()
+#        #Self.notDone = False
+#        return
 
 class ParametreDialog(FloatLayout):
     save_parametres = ObjectProperty(None)
@@ -477,7 +479,7 @@ class getInput(Popup):
             self.father = len(self.data) == 3 and True or False
             
             self.mainGridLayout = GridLayout(cols=3)
-            self.mainGridLayout.canvas = Color(75/255, 127/255, 209/255, 1)
+            #self.mainGridLayout.canvas = Color(75/255, 127/255, 209/255, 1)
 
             if self.father:
                 self.GridLayout = GridLayout(cols=4, rows=4)
@@ -725,24 +727,24 @@ class EcranFctMethod(GridLayout):
             self.onglets[titre] = 1
             return titre
 
-    def dismiss_popupID(self):
-        self.dismiss()
-        #self.notDone = False
+#    def dismiss_popupID(self):
+#        self.dismiss()
+#        #self.notDone = False
 
-    def ok_popupID(self, ID1, ID2, ID3=None):
-        if ID1.count(True) == 2 or ID2.count(True) == 2 or (self.father and ID3.count(True) == 2):
-            self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"), size_hint=(0.3, 0.3))
-            self._popupEr.open()
-        elif ID1.count(True) == 0 or ID2.count(True) == 0 or (self.father and ID3.count(True) == 0):
-            self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"), size_hint=(0.3, 0.3))
-            self._popupEr.open()
-        else:
-            self.dictsamples["mother"] = self.echantillons[ID1.index(True)]
-            self.dictsamples["foetus"] = self.echantillons[ID2.index(True)]
-            if self.father:
-                self.dictsamples["father"] = self.echantillons[ID3.index(True)]
-            self.notDone = False
-            self.dismiss_popupID()
+#    def ok_popupID(self, ID1, ID2, ID3=None):
+#        if ID1.count(True) == 2 or ID2.count(True) == 2 or (self.father and ID3.count(True) == 2):
+#            self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"), size_hint=(0.3, 0.3))
+#            self._popupEr.open()
+#        elif ID1.count(True) == 0 or ID2.count(True) == 0 or (self.father and ID3.count(True) == 0):
+#            self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"), size_hint=(0.3, 0.3))
+#            self._popupEr.open()
+#        else:
+#            self.dictsamples["mother"] = self.echantillons[ID1.index(True)]
+#            self.dictsamples["foetus"] = self.echantillons[ID2.index(True)]
+#            if self.father:
+#                self.dictsamples["father"] = self.echantillons[ID3.index(True)]
+#            self.notDone = False
+#            self.dismiss_popupID()
         
     def load(self, path, filename):
         """ Call the functions and methods from Traitement2 with default parameters, path and filename
@@ -759,26 +761,26 @@ class EcranFctMethod(GridLayout):
             self.echantillons = data[0]
             self.data = data[1]
 
-            #myPopupLoad = getInput(self.echantillons)
-            #self.dictsamples = myPopupLoad.getSamples()
+            myPopupLoad = getInput(self.echantillons)
+            self.dictsamples = myPopupLoad.getSamples()
             # attribution de l'origine des echantillons
-            self.notDone = True
-            self.father = len(self.echantillons) == 3 and True or False
-            self.dictsamples = {}
-            print(" ------------ Avant lappel ------------")
-            print(self.echantillons)
-            print(self.father)
-            try:
-                content = GetIdentity(data=self.echantillons, father=self.father)
-                self._popupID = Popup(title="Identification des individus",
-                                content=content,
-                                size_hint=(0.7, 0.7))
-                self._popupID.open()
-            except Exception as e:
-                logger.error("Ouverture de l'attribution de l'origine des echantillons impossible", exc_info=True)
-                self._popupEr = Popup(title="Erreur", content=Label(text="Attribution de l'origine des echantillons impossible"), size_hint=(0.3, 0.3))
-                self._popupEr.open()
-                return
+            #self.notDone = True
+            #self.father = len(self.echantillons) == 3 and True or False
+            #self.dictsamples = {}
+            #print(" ------------ Avant lappel ------------")
+            #print(self.echantillons)
+            #print(self.father)
+            #try:
+            #    content = GetIdentity(data=self.echantillons, father=self.father)
+            #    self._popupID = Popup(title="Identification des individus",
+            #                    content=content,
+            #                    size_hint=(0.7, 0.7))
+            #    self._popupID.open()
+            #except Exception as e:
+            #    logger.error("Ouverture de l'attribution de l'origine des echantillons impossible", exc_info=True)
+            #    self._popupEr = Popup(title="Erreur", content=Label(text="Attribution de l'origine des echantillons impossible"), size_hint=(0.3, 0.3))
+            #    self._popupEr.open()
+            #    return
             logger.info("Attribution de l'origine des echantillons réussi")
             
             self.instance_path = path
@@ -1034,10 +1036,10 @@ Factory.register('EcranPremier', cls=EcranPremier)
 Factory.register('EcranFct', cls=EcranFct)
 Factory.register('EcranFctMethod', cls=EcranFctMethod)
 Factory.register('LoadDialog', cls=LoadDialog)
-Factory.register('SubWidgetNoFather', cls=SubWidgetNoFather)
-Factory.register('SubWidgetFather', cls=SubWidgetFather)
-Factory.register('SubWidgetButton', cls=SubWidgetButton)
-Factory.register('GetIdentity', cls=GetIdentity)
+#Factory.register('SubWidgetNoFather', cls=SubWidgetNoFather)
+#Factory.register('SubWidgetFather', cls=SubWidgetFather)
+#Factory.register('SubWidgetButton', cls=SubWidgetButton)
+#Factory.register('GetIdentity', cls=GetIdentity)
 Factory.register('ParametreDialog', cls=ParametreDialog)
 Factory.register('LigneTableau', cls=LigneTableau)
 Factory.register('InfosConclusion', cls=InfosConclusion)

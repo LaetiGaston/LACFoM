@@ -63,12 +63,12 @@ class Echantillon:
         for key in self.mere.data.keys():
             self.foetus.data[key]["concordance"] = ["OUI", "OUI"]
             if not common_element(self.mere.data[key]['Allele'], self.foetus.data[key]['Allele']):
-                self.foetus.data[keys]["concordance"][0] = "NON"
+                self.foetus.data[key]["concordance"][0] = "NON"
                 concordance_mere_foet += 1
                 try:
                     concordance_pere_foet = 0
                     if not common_element(self.pere.data[key]['Allele'], self.foetus.data[key]['Allele']):
-                        self.foetus.data[keys]["concordance"][1] = "NON"
+                        self.foetus.data[key]["concordance"][1] = "NON"
                         concordance_pere_foet += 1
                 except Exception as e:
                     pass
@@ -232,7 +232,9 @@ class Echantillon:
                 if self.concordance_pere_foet:
                     resultat = {"Marqueur": marqueurs, "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in marqueurs ], "Détails M/F": self.get_notconcordant(0)}
                 else:
-                    resultat = {"Marqueur": [ marqueurs ], "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in marqueurs ], "Détails M/F": self.get_notconcordant(0), "Concordance Pere/Foetus": [ self.foetus.data[marqueur]["concordance"][1] for marqueur in marqueurs ], "Détails P/F": self.get_notconcordant(1)}
+                    resultat = {"Marqueur": marqueurs, "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in marqueurs ], "Détails M/F": self.get_notconcordant(0), "Concordance Pere/Foetus": [ self.foetus.data[marqueur]["concordance"][1] for marqueur in marqueurs ], "Détails P/F": self.get_notconcordant(1)}
+            else:
+                resultat = {"Marqueur": marqueurs, "Concordance Mere/Foetus": [ self.foetus.data[marqueur]["concordance"][0] for marqueur in marqueurs ], "Détails M/F": self.get_notconcordant(0)}
         return resultat
 
     def get_id(self):
@@ -251,7 +253,9 @@ class Echantillon:
         parent: 0 for mother and 1 for father
         """
         list_alleles = []
-        for marqueur in self.foetus.data.keys():
+        marqueurs = list(self.foetus.data)
+        marqueurs.remove("AMEL")
+        for marqueur in marqueurs:
             if self.foetus.data[marqueur]["concordance"][parent] == "NON":
                 list_alleles.append("M: " + str(self.mere.data[marqueur]["Allele"]) + " F: " + str(self.foetus.data[marqueur]["Allele"]))
             else:
