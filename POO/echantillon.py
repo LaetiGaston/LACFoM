@@ -88,7 +88,7 @@ class Echantillon:
         marqueurs = list(self.foetus.data)
         marqueurs.remove('AMEL')
         for marqueur in marqueurs:
-            #print("MARQIEUUR: ", marqueur)
+            print("MARQEUR: ", marqueur)
             # check if the mother is homozygote
             if len(self.mere.data[marqueur]["Allele"]) == 1:
                 self.foetus.data[marqueur]["détails"] = "Mere homozygote"
@@ -98,17 +98,17 @@ class Echantillon:
                 pic1 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][0])]
                 pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])]
                 # diff entre les 2 pics sup a 1-seuil
-                #print("pic1:",pic1,"pic2:", pic2)
+                print("pic1:",pic1,"pic2:", pic2, abs(pic1-pic2), (1 - self.seuil_hauteur) * max(pic1,pic2), abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2))
                 if abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2) :
                     # vérification de l'echo
                     contaminant = min(pic1, pic2)
                     pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
                     # Test petit pic dans echo
                     ECHO = False
-                    #print("conta",contaminant,pic_conta)
+                    print("conta",contaminant,pic_conta)
                     for pic_foetus in self.foetus.data[marqueur]["Allele"]:
-                        #print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
-                        if round(abs(pic_foetus - pic_conta),2) == 1.0:
+                        print("difference: ",pic_foetus, pic_conta,round(pic_foetus - pic_conta,2))
+                        if round(pic_foetus - pic_conta,2) == 1.0:
                             ECHO = True
                             self.foetus.data[marqueur]["conclusion"] = "Non informatif"
                             self.foetus.data[marqueur]["détails"] = "Echo"

@@ -1,4 +1,4 @@
-#!/home/lbourgea/Documents/Projets/Exome/pipeline_annotation/venv/bin/python
+
 # -*- coding: utf-8 -*-
 
 import sys
