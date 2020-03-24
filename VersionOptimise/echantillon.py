@@ -86,6 +86,7 @@ class Echantillon:
         """
         """
         marqueurs = list(self.foetus.data)
+        print(marqueurs)
         marqueurs.remove('AMEL')
         for marqueur in marqueurs:
             print("MARQIEUUR: ", marqueur)
@@ -108,7 +109,7 @@ class Echantillon:
                     print("conta",contaminant,pic_conta)
                     for pic_foetus in self.foetus.data[marqueur]["Allele"]:
                         print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
-                        if round(abs(pic_foetus - pic_conta),2) == 1.0:
+                        if round(pic_foetus - pic_conta,2) == 1.0:
                             ECHO = True
                             self.foetus.data[marqueur]["conclusion"] = "Non informatif"
                             self.foetus.data[marqueur]["détails"] = "Echo"
