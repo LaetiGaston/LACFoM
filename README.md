@@ -7,7 +7,7 @@ PyInstaller est utilisé pour créer l'exécutable.
 
 --------------------------------------Création du fichier spec--------------------------------------------------------
 
-Regrouper l'ensemble des scripts python ainsi que logo.ico dans un dossier. (Exemple ici V_demo_6)
+Regrouper l'ensemble des scripts python (pas le .kv, voir par la suite) ainsi que logo.ico dans un dossier. (Exemple ici V_demo_6)
 
 Commande bash dans ce nouveau dossier créé:
 
