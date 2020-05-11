@@ -7,7 +7,7 @@ PyInstaller est utilisé pour créer l'exécutable.
 
 --------------------------------------Création du fichier spec--------------------------------------------------------
 
-Regrouper les scripts (main_gui.py, pdf_feuille_resultat.py, Traitement2,logo.ico) situés dans le dossier V_en_cours dans un dossier. (Exemple ici V_demo_6)
+Regrouper l'ensemble des scripts python (pas le .kv, voir par la suite) ainsi que logo.ico dans un dossier. (Exemple ici V_demo_6)
 
 Commande bash dans ce nouveau dossier créé:
 
@@ -15,7 +15,7 @@ Commande bash dans ce nouveau dossier créé:
 
 (remplacer chemin du logo)
 
-Un fichier spec est créé dans le dossier suite à cette commande. Avant de modifier ce fichier spec, créer un dossier "data" dans le dossier contenant le fichier spec qui comportera le script my.kv et les images : croix.png, logo.png, loco_CHU.png
+Un fichier spec est créé dans le dossier suite à cette commande. Avant de modifier ce fichier spec, créer un dossier "data" dans le dossier contenant le fichier spec qui comportera le script my.kv et les images : croix.png, logo.png, loco_CHU.png, croos.png, check.png
 
 ---------------------------------------Modification du fichier spec----------------------------------------------------
 
@@ -41,11 +41,9 @@ coll = COLLECT(exe, Tree('examples-path\demo\touchtracer\'),
            
            upx=True,
            
-           name='touchtracer')
+           name='LACFoM')
 
 Dans cette partie coll, spécifier le chemin du dossier "data" à la ligne : coll = COLLECT(exe, Tree('examples-path\demo\touchtracer\'),
-
-Modifier le nom à la ligne name='touchtracer' par name='LACFom'
 
 3)Toujours dans le fichier spec, dans la partie "a = Analysis", à la ligne hiddenimports il faut écrire :
 
