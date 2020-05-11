@@ -735,4 +735,4 @@ if __name__ == "__main__":
     Emetteur = "  PTBM -  -"
     version = "V.1"
     #creation_PDF(path,nom_projet, nom_fichier_mere, nom_fichier_foetus, nom_fichier_pere, nom_pdf, Sexe, dataframe, det_dataframe, choix_utilisateur, nom_utilisateur, seuil_pic, seuil_marqueur,seuil_pourcentage, presence_pere, temoin_positif, temoin_negatif, Entite_d_Application, Emetteur, version)
-    creation_PDF2(path,Echantillon,choix_utilisateur, nom_utilisateur, seuil_pic, seuil_marqueur,seuil_pourcentage, presence_pere, 0, 1, Entite_d_Application, Emetteur, version)
+    #creation_PDF2(path,Echantillon,choix_utilisateur, nom_utilisateur, seuil_pic, seuil_marqueur,seuil_pourcentage, presence_pere, 0, 1, Entite_d_Application, Emetteur, version)

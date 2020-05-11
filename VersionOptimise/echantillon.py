@@ -92,7 +92,7 @@ class Echantillon:
             print("MARQIEUUR: ", marqueur)
             # check if the mother is homozygote
             if len(self.mere.data[marqueur]["Allele"]) == 1:
-                self.foetus.data[marqueur]["détails"] = "Mere homozygote"
+                self.foetus.data[marqueur]["détails"] = "Mère homozygote"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
             # Alleles mere inclus dans alleles foetus:
             elif len(set(self.foetus.data[marqueur]["Allele"]).intersection(set(self.mere.data[marqueur]["Allele"]))) == 2:
@@ -134,7 +134,7 @@ class Echantillon:
                     # Meme allele que la mere 
                     else:
                         self.foetus.data[marqueur]["conclusion"] = "Non informatif"
-                        self.foetus.data[marqueur]["détails"] = "Même allèles que la mère"
+                        self.foetus.data[marqueur]["détails"] = "Mêmes allèles que la mère"
 
             # check allele non herite mere dans echo a -1 de la mere [reste plus que les cas 2 alleles]
             elif common_element([ x-1 for x in list(set(self.foetus.data[marqueur]["Allele"]).difference(set(self.mere.data[marqueur]["Allele"]))) ], list(set(self.mere.data[marqueur]["Allele"]).difference(set(self.foetus.data[marqueur]["Allele"])))):
@@ -217,7 +217,7 @@ class Echantillon:
                 self.foetus.data[marqueur]["conclusion"] = "Contaminé"
         else:
             self.foetus.data[marqueur]["conclusion"] = "Non informatif"
-            self.foetus.data[marqueur]["détails"] = "Même allèles que la mère"
+            self.foetus.data[marqueur]["détails"] = "Mêmes allèles que la mère"
 
     def get_resultats(self):
         """
