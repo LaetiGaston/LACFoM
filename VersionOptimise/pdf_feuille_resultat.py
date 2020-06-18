@@ -256,7 +256,7 @@ def profil_allelique(string,parent):
     '''
     styles = getSampleStyleSheet()
     style = styles["BodyText"]
-    alleles = string.split('  ')
+    alleles = string.replace("P: ", "").replace("M: ", "").split(" F: ") ##TODO ecrire expression reguliere -> premier crochets parents deuxiemes foetus
     alleles_p = alleles[0]
     alleles_f = alleles[1]
     nb_allele=0
@@ -335,7 +335,7 @@ def resultats(data,dataframe,Concordance_mf, Concordance_pf):
                      data[marqueurs][4] = style_resultat_tableau(dataframe["Détails M/F"][marqueurs-2])
                 if data[marqueurs][3] == "":
                      data[marqueurs][3] =" / "
-                     
+
                 data[marqueurs][5] = style_resultat_tableau(dataframe["Concordance Pere/Foetus"][marqueurs-2])
                 if dataframe["Concordance Pere/Foetus"][marqueurs-2]=="NON":
                     data[marqueurs][6] = profil_allelique(dataframe["Détails P/F"][marqueurs-2],"pere")

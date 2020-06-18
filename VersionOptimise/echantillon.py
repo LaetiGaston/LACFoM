@@ -58,6 +58,7 @@ class Echantillon:
         self.seuil_hauteur = hauteur
 
     def concordance_ADN(self, number_mere=1, number_pere=1):
+        #print("-----------CONCORDANCE ADN------------")
         concordance_mere_foet = 0
         concordance_pere_foet = 0
         for key in self.mere.data.keys():
@@ -65,13 +66,12 @@ class Echantillon:
             if not common_element(self.mere.data[key]['Allele'], self.foetus.data[key]['Allele']):
                 self.foetus.data[key]["concordance"][0] = "NON"
                 concordance_mere_foet += 1
-                try:
-                    concordance_pere_foet = 0
-                    if not common_element(self.pere.data[key]['Allele'], self.foetus.data[key]['Allele']):
-                        self.foetus.data[key]["concordance"][1] = "NON"
-                        concordance_pere_foet += 1
-                except Exception as e:
-                    pass
+            try:
+                if not common_element(self.pere.data[key]['Allele'], self.foetus.data[key]['Allele']):
+                    self.foetus.data[key]["concordance"][1] = "NON"
+                    concordance_pere_foet += 1
+            except Exception as e:
+                pass
         
         # Check concordance
         self.concordance_mere_foet = True
@@ -86,10 +86,8 @@ class Echantillon:
         """
         """
         marqueurs = list(self.foetus.data)
-        print(marqueurs)
         marqueurs.remove('AMEL')
         for marqueur in marqueurs:
-            print("MARQIEUUR: ", marqueur)
             # check if the mother is homozygote
             if len(self.mere.data[marqueur]["Allele"]) == 1:
                 self.foetus.data[marqueur]["détails"] = "Mère homozygote"
@@ -99,16 +97,16 @@ class Echantillon:
                 pic1 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][0])]
                 pic2 = self.foetus.data[marqueur]["Hauteur"][self.foetus.data[marqueur]["Allele"].index(self.mere.data[marqueur]["Allele"][1])]
                 # diff entre les 2 pics sup a 1-seuil
-                print("pic1:",pic1,"pic2:", pic2)
+                #print("pic1:",pic1,"pic2:", pic2)
                 if abs(pic1 - pic2) > (1 - self.seuil_hauteur) * max(pic1,pic2) :
                     # vérification de l'echo
                     contaminant = min(pic1, pic2)
                     pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
                     # Test petit pic dans echo
                     ECHO = False
-                    print("conta",contaminant,pic_conta)
+                    #print("conta",contaminant,pic_conta)
                     for pic_foetus in self.foetus.data[marqueur]["Allele"]:
-                        print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
+                        #print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
                         if round(pic_foetus - pic_conta,2) == 1.0:
                             ECHO = True
                             self.foetus.data[marqueur]["conclusion"] = "Non informatif"
@@ -137,7 +135,8 @@ class Echantillon:
                         self.foetus.data[marqueur]["détails"] = "Mêmes allèles que la mère"
 
             # check allele non herite mere dans echo a -1 de la mere [reste plus que les cas 2 alleles]
-            elif common_element([ x-1 for x in list(set(self.foetus.data[marqueur]["Allele"]).difference(set(self.mere.data[marqueur]["Allele"]))) ], list(set(self.mere.data[marqueur]["Allele"]).difference(set(self.foetus.data[marqueur]["Allele"])))):
+            #elif common_element([ x-1 for x in list(set(self.foetus.data[marqueur]["Allele"]).difference(set(self.mere.data[marqueur]["Allele"]))) ], list(set(self.mere.data[marqueur]["Allele"]).difference(set(self.foetus.data[marqueur]["Allele"])))):
+            elif common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], self.mere.data[marqueur]["Allele"]):
                 self.foetus.data[marqueur]["détails"] = "Echo"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
             else:
@@ -227,7 +226,21 @@ class Echantillon:
         marqueurs = list(self.foetus.data)
         marqueurs.remove("AMEL")
         if self.concordance_mere_foet:
-            resultat = {"Marqueur": marqueurs, "Conclusion": [ self.foetus.data[marqueur]["conclusion"] for marqueur in marqueurs ], "Détails M/F": [ self.foetus.data[marqueur]["détails"] for marqueur in marqueurs ]}
+            if self.pere:
+                if self.concordance_pere_foet:
+                    resultat = {"Marqueur": marqueurs,
+                                "Conclusion": [self.foetus.data[marqueur]["conclusion"] for marqueur in marqueurs],
+                                "Détails M/F": [self.foetus.data[marqueur]["détails"] for marqueur in marqueurs]}
+                else:
+                    resultat = {"Marqueur": marqueurs,
+                                "Conclusion": [self.foetus.data[marqueur]["conclusion"] for marqueur in marqueurs],
+                                "Détails M/F": [self.foetus.data[marqueur]["détails"] for marqueur in marqueurs],
+                                "Concordance Pere/Foetus": [self.foetus.data[marqueur]["concordance"][1] for marqueur in
+                                                            marqueurs], "Détails P/F": self.get_notconcordant(1)}
+            else:
+                resultat = {"Marqueur": marqueurs,
+                            "Conclusion": [self.foetus.data[marqueur]["conclusion"] for marqueur in marqueurs],
+                            "Détails M/F": [self.foetus.data[marqueur]["détails"] for marqueur in marqueurs]}
         else:
             if self.pere:
                 if self.concordance_pere_foet:
@@ -256,9 +269,10 @@ class Echantillon:
         list_alleles = []
         marqueurs = list(self.foetus.data)
         marqueurs.remove("AMEL")
+        val = "M: " if parent == 0 else "P: "
         for marqueur in marqueurs:
             if self.foetus.data[marqueur]["concordance"][parent] == "NON":
-                list_alleles.append("M: " + str(self.mere.data[marqueur]["Allele"]) + " F: " + str(self.foetus.data[marqueur]["Allele"]))
+                list_alleles.append(val + str(self.mere.data[marqueur]["Allele"]) + " F: " + str(self.foetus.data[marqueur]["Allele"]))
             else:
                 list_alleles.append("")
         return list_alleles
@@ -269,7 +283,9 @@ def allele_minus_one(self, marqueur, allele):
 def common_element(list1,list2):
     list1_set = set(list1)
     list2_set = set(list2)
+    #print(list1_set, list2_set, list1_set.intersection(list2_set))
     if len(list1_set.intersection(list2_set)) > 0:
+        #print("alleles communs", list1_set.intersection(list2_set))
         return True
     return False
 

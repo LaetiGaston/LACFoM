@@ -493,8 +493,8 @@ class getInput(Popup):
             self.checkBox_b2 = CheckBox(group="foetus")
 
             if self.father:
-                self.checkBox_a3 = CheckBox(group = "mother")
-                self.checkBox_b3 = CheckBox(group = "foetus")
+                self.checkBox_a3 = CheckBox(group="mother")
+                self.checkBox_b3 = CheckBox(group="foetus")
                 self.checkBox_c = CheckBox(group="pere")
                 self.checkBox_c2 = CheckBox(group="pere")
                 self.checkBox_c3 = CheckBox(group="pere")
@@ -502,18 +502,18 @@ class getInput(Popup):
             #line1
             self.GridLayout.add_widget(Label(text=""))
 
-            self.LabelMother = Label(text="Mère", color=[256, 256, 256, 1])
+            self.LabelMother = Label(text="Mère", color=[1, 1, 1, 1])
             self.GridLayout.add_widget(self.LabelMother)
 
-            self.LabelFoetus = Label(text="Foetus", color=[256, 256, 256, 1])
+            self.LabelFoetus = Label(text="Foetus", color=[1, 1, 1, 1])
             self.GridLayout.add_widget(self.LabelFoetus)
 
             if self.father:
-                self.LabelFather = Label(text="Père", color=[256, 256, 256, 1])
+                self.LabelFather = Label(text="Père", color=[1, 1, 1, 1])
                 self.GridLayout.add_widget(self.LabelFather)
 
             #line2
-            self.LabelID1 = Label(text=self.data[0], color=[256, 256, 256, 1])
+            self.LabelID1 = Label(text=self.data[0], color=[1, 1, 1, 1])
             self.GridLayout.add_widget(self.LabelID1)
             
             self.GridLayout.add_widget(self.checkBox_a)
@@ -524,7 +524,7 @@ class getInput(Popup):
                 self.GridLayout.add_widget(self.checkBox_a3)
 
             #line3
-            self.LabelID2 = Label(text=self.data[1], color=[256, 256, 256, 1])
+            self.LabelID2 = Label(text=self.data[1], color=[1, 1, 1, 1])
             self.GridLayout.add_widget(self.LabelID2)
 
             self.GridLayout.add_widget(self.checkBox_b)
@@ -536,7 +536,7 @@ class getInput(Popup):
             
             #line4
             if self.father:
-                self.LabelID3 = Label(text=self.data[2], color=[256, 256, 256, 1])
+                self.LabelID3 = Label(text=self.data[2], color=[1, 1, 1, 1])
                 self.GridLayout.add_widget(self.LabelID3)
 
                 self.GridLayout.add_widget(self.checkBox_c)
@@ -570,46 +570,46 @@ class getInput(Popup):
 
             self.mainGridLayout.add_widget(self.okButton)
 
-            self.title="Identification des individus"
+            self.title = "Identification des individus"
             self.content = self.mainGridLayout
-            self.size_hint=(0.9, 0.9)
-            self.auto_dismiss=False
+            self.size_hint = (0.9, 0.9)
+            self.auto_dismiss = False
             
-            self.cancelButton.bind(on_press = self.cancelButtonPress)
-            self.okButton.bind(on_press = self.okButtonPress)
+            self.cancelButton.bind(on_press=self.cancelButtonPress)
+            self.okButton.bind(on_press=self.okButtonPress)
 
             self.samples = {}
 
             self.notDone = True
 
 
-    def getResult(self):
-        print("in get results du popup")
+    #def getResult(self):
+        #print("in get results du popup")
         #self.open()
-        while True:
-            print("waiting for chackbox selection")
-        print("after open popup")
+    #    while True:
+            #print("waiting for chackbox selection")
+        #print("after open popup")
 
     def onClose(self):
             return
 
     def okButtonPress(self, instance):
-        print(" ****************** okButtonPressed ***************************")
+        #print(" ****************** okButtonPressed ***************************")
         ID1 = [self.checkBox_a.active, self.checkBox_b.active]
         ID2 = [self.checkBox_a2.active, self.checkBox_b2.active]
         if self.father:
             ID1.append(self.checkBox_c.active)
             ID2.append(self.checkBox_c2.active)
             ID3 = [self.checkBox_a3.active, self.checkBox_b3.active, self.checkBox_c3.active]
-        print(ID1)
-        print(ID2)
+        #print(ID1)
+        #print(ID2)
         if ID1.count(True) == 2 or ID2.count(True) == 2 or (self.father and ID3.count(True) == 2):
-            print("Deux echantillons meme origine")
+            #print("Deux echantillons meme origine")
             self._popupEr = Popup(title="Erreur", content=Label(text="Deux échantillons ne peuvent avoir la même origine"),
                             size_hint=(0.3, 0.3))
             self._popupEr.open()
         elif ID1.count(True) == 0 or ID2.count(True) == 0 or (self.father and ID3.count(True) == 0):
-            print("Un echantillon n'a pas été attribué")
+            #print("Un echantillon n'a pas été attribué")
             self._popupEr = Popup(title="Erreur", content=Label(text="Un échantillon n'a pas été attribué"),
                             size_hint=(0.3, 0.3))
             self._popupEr.open()
@@ -618,8 +618,8 @@ class getInput(Popup):
             self.samples["foetus"] = self.data[ID2.index(True)]
             if self.father:
                 self.samples["father"] = self.data[ID3.index(True)]
-            print(self.samples)
-            print("Quit fonction okButton Pressed")
+            #print(self.samples)
+            #print("Quit fonction okButton Pressed")
             self.notDone = False
             self.dismiss()
         return
@@ -701,14 +701,14 @@ class EcranFctMethod(GridLayout):
             return True
 
     def _fbrowser_success(self, instance):
-        print("sucess")
+        #print("sucess")
         if self.load(instance.path, instance.selection):
             if self.compute():
                 self.panel.manager.current = "ecran_principale"
                 self.memory_path = instance.path
 
     def _fbrowser_submit(self, instance):
-        print("submit")
+        #print("submit")
         if self.load(instance.path, instance.selection):
             if self.compute():
                 self.panel.manager.current = "ecran_principale"
