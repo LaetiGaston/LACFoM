@@ -33,6 +33,7 @@ from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.tabbedpanel import TabbedPanelHeader
 from kivy.uix.checkbox import CheckBox
 from kivy.utils import platform
+from kivy.storage.jsonstore import JsonStore
 from functools import partial
 
 from datetime import datetime
@@ -70,14 +71,15 @@ class ScreenManagement(ScreenManager):
 class EcranPremier(Screen):
     def show_load(self, nom_utilisateur):
         try:
+            self.manager.get_screen('ecran_principale').ids.ecranMethod.InfoParametre["nom_utilisateur"] = str(nom_utilisateur)
             self.manager.get_screen('ecran_principale').ids.ecranMethod.show_load()
-            self.manager.get_screen('ecran_principale').ids.ecranMethod.InfoParametre["nom_utilisateur"] = str(
-                nom_utilisateur)
+            #TODO Verifier que l'inversion des lignes dde Theo fonctionne toujours correctement
+            #self.manager.get_screen('ecran_principale').ids.ecranMethod.InfoParametre["nom_utilisateur"] = str(nom_utilisateur)
         except Exception as e:
             logger.error("Chargement écran échoué", exc_info=True)
             return
 
-        logger.info("Changment d'écran réussi")
+        logger.info("Changement d'écran réussi")
 
 
 class EcranFct(Screen):
@@ -662,6 +664,7 @@ class EcranFctMethod(GridLayout):
     emetteur = "PBP-P2A-GEN"
     entite = "PBP-PTBM"
     memory_path = join(expanduser('~'), 'Desktop')
+    store = ""
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -679,6 +682,10 @@ class EcranFctMethod(GridLayout):
 
         self.hauteur = "1/3"
         self.nb = 2
+
+        self.store = JsonStore('LACFoM_paths_%s.json'%self.InfoParametre["nom_utilisateur"])#('LACFoM_paths.json')
+        if os.path.exists('LACFoM_paths_%s.json'%self.InfoParametre["nom_utilisateur"]):
+            self.memory_path = self.store.get('workspace')['path']
 
         if platform == 'win':
             user_path = dirname(expanduser('~')) + sep + 'Documents'
@@ -706,6 +713,7 @@ class EcranFctMethod(GridLayout):
             if self.compute():
                 self.panel.manager.current = "ecran_principale"
                 self.memory_path = instance.path
+                self.store.put('workspace', path=self.memory_path)
 
     def _fbrowser_submit(self, instance):
         #print("submit")
@@ -713,6 +721,7 @@ class EcranFctMethod(GridLayout):
             if self.compute():
                 self.panel.manager.current = "ecran_principale"
                 self.memory_path = instance.path
+                self.store.put('workspace', path=self.memory_path)
 
     def retour_conclusion(self, retour):
         self.retour = retour
@@ -905,7 +914,7 @@ class EcranFctMethod(GridLayout):
             else:
                 conclu = self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"]
         except Exception as e:
-            logger.error("Echec atribution varaible conclu", exc_info=True)
+            logger.error("Echec atribution variable conclu", exc_info=True)
             return
         while True:
             try:

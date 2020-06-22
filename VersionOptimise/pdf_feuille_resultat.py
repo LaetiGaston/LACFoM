@@ -516,23 +516,26 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     Par = Paragraph("<font size=7.5><font color=darkblue><u>Paramètres: </u></font><font color=darkblue>Nombre minimum de marqueurs contaminés: </font>"+str(seuil_marqueur)+"; <font color=darkblue>Hauteur de pic discriminant un allèle contaminé d’un allèle normal: </font>"+str(seuil_pic)+"</font>",style)
 
     if temoin_positif == 1:
-        temoin_pos = Paragraph("<font size=12><font color=darkblue><b>Témoin positif: Validé</b></font></font>",style)
+        temoin_pos = Paragraph("<font size=10><font color=darkblue><b>Témoin positif: Validé</b></font></font>",style)
     else:
-        temoin_pos = Paragraph("<font size=12><font color=darkblue><b>Témoin positif: <font color=red> Non validé</font></b></font></font>",style)
+        temoin_pos = Paragraph("<font size=10><font color=darkblue><b>Témoin positif: <font color=red> Non validé</font></b></font></font>",style)
     if temoin_negatif == 1:
-        temoin_neg = Paragraph("<font size=12><font color=darkblue><b>Témoin négatif: Validé </b></font></font>",style)
+        temoin_neg = Paragraph("<font size=10><font color=darkblue><b>Témoin négatif: Validé </b></font></font>",style)
     else:
-        temoin_neg = Paragraph("<font size=12><font color=darkblue><b>Témoin négatif: <font color=red>Non validé</font></b></font></font>",style)
+        temoin_neg = Paragraph("<font size=10><font color=darkblue><b>Témoin négatif: <font color=red>Non validé</font></b></font></font>",style)
     
-
+    h_val = 0
     if Concordance_mf == "NON" or Concordance_pf == "NON":
-        alignement_col_gauche = 600
-        alignement_col_centre = 20
-        alignement_col_droite = 220
+        h_val = 5
+        alignement_col_gauche = 60 ##TODO
+        alignement_col_gauche_bis = 120 #60
+        alignement_col_centre = 60 #20
+        alignement_col_droite = 280 #220
     else:
-        alignement_col_gauche = 20
-        alignement_col_centre = 200
-        alignement_col_droite = 420
+        alignement_col_gauche_bis = 200 #20 ## TODO revoir ... sale...
+        alignement_col_gauche = 50 #20
+        alignement_col_centre = 300 #200
+        alignement_col_droite = 550 #420
         
     
     aH = aH - h
@@ -543,29 +546,29 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
         Par.drawOn(canv,200, aH-85)
     
 
-    P_concordance_p = Paragraph("<font size=12><font color=darkblue><b>Concordance père/foetus: "+Concordance_pf+"</b></font></font>",style)
-    P_concordance_m = Paragraph("<font size=12><font color=darkblue><b>Concordance mère/foetus: "+Concordance_mf+"</b></font></font>",style)
+    P_concordance_p = Paragraph("<font size=10><font color=darkblue><b>Concordance père/foetus: "+Concordance_pf+"</b></font></font>",style)
+    P_concordance_m = Paragraph("<font size=10><font color=darkblue><b>Concordance mère/foetus: "+Concordance_mf+"</b></font></font>",style)
     if Concordance_mf != "NON":
-        P_nb_Nconta = Paragraph("<b><font size=12><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=green>"+str(nb_info_Nconta)+"</font></font></b>",style)
-        P_nb_conta = Paragraph("<b><font size=12><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>"+str(nb_info_Conta)+"</font></font></b>",style)
-        P_moy = Paragraph("<font size=12><b><font color=darkblue>Moyenne des pourcentages de contamination : </font>"+str(moy_conta)+"</b></font>",style)
+        P_nb_Nconta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=green>"+str(nb_info_Nconta)+"</font></font></b>",style)
+        P_nb_conta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>"+str(nb_info_Conta)+"</font></font></b>",style)
+        P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne des pourcentages de contamination : </font>"+str(moy_conta)+"</b></font>",style)
     else:
-        P_nb_Nconta = Paragraph("<b><font size=12><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=red>Non calculé</font></font></b>",style)
-        P_nb_conta = Paragraph("<b><font size=12><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>Non calculé</font></font></b>",style)
-        P_moy = Paragraph("<font size=12><b><font color=darkblue>Moyenne des pourcentages de contamination : </font><font color=red>Non calculé</font></b></font>",style)
+        P_nb_Nconta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=red>Non calculé</font></font></b>",style)
+        P_nb_conta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>Non calculé</font></font></b>",style)
+        P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne des pourcentages de contamination : </font><font color=red>Non calculé</font></b></font>",style)
         
-    P_conta_echantillon = Paragraph("<font size=12><b>"+style_resultat_conclusion(Contamination)+"</b></font>",style)
+    P_conta_echantillon = Paragraph("<font size=10><b>"+style_resultat_conclusion(Contamination)+"</b></font>",style)
     
 
     aH = aH - 5
     w, h = P_concordance_m.wrap(aW,aH)
-    P_concordance_m.drawOn(canv, alignement_col_centre,aH-h)
+    P_concordance_m.drawOn(canv, alignement_col_centre,aH-h+h_val) ##
     
     w, h = P_nb_Nconta.wrap(aW,aH)
     P_nb_Nconta.drawOn(canv, alignement_col_droite,aH-h)
 
     w, h = temoin_pos.wrap(aW,aH)
-    temoin_pos.drawOn(canv, alignement_col_gauche,aH-h)
+    temoin_pos.drawOn(canv, alignement_col_gauche,aH-h-3.5*h_val) ##
     
 
     if Concordance_pf == "OUI" and Concordance_mf == "NON":
@@ -575,7 +578,7 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     aH = aH - (h+10)
     if Concordance_pf != "ABS":
         w, h = P_concordance_p.wrap(aW,aH)
-        P_concordance_p.drawOn(canv, alignement_col_centre,aH-h)
+        P_concordance_p.drawOn(canv, alignement_col_centre,aH-h+3*h_val) ##
 
     w, h = P_nb_conta.wrap(aW,aH)
     P_nb_conta.drawOn(canv, alignement_col_droite,aH-(h-10))
@@ -585,12 +588,13 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     P_moy.drawOn(canv, alignement_col_droite,aH-(h-10))
     
     w, h = temoin_neg.wrap(aW,aH)
-    temoin_neg.drawOn(canv, alignement_col_gauche,aH-(h-10))
+    temoin_neg.drawOn(canv, alignement_col_gauche,aH-(h-10)-0.8*h_val) ##
         
     
     aH = aH - 5
     w, h = P_conta_echantillon.wrap(aW,aH)
-    P_conta_echantillon.drawOn(canv, alignement_col_gauche,aH-h)
+    print("CONTAMINATION", Contamination, canv, alignement_col_gauche_bis, aH-h)
+    P_conta_echantillon.drawOn(canv, alignement_col_gauche_bis,aH-h)
 
     if Concordance_mf == "NON" and Concordance_pf== "NON":
         aH = aH - 55
