@@ -593,7 +593,6 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     
     aH = aH - 5
     w, h = P_conta_echantillon.wrap(aW,aH)
-    print("CONTAMINATION", Contamination, canv, alignement_col_gauche_bis, aH-h)
     P_conta_echantillon.drawOn(canv, alignement_col_gauche_bis,aH-h)
 
     if Concordance_mf == "NON" and Concordance_pf== "NON":

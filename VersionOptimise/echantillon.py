@@ -159,7 +159,7 @@ class Echantillon:
                 else:
                     valconta += self.foetus.data[marqueur]["détails"]
         if contamajeur:
-            self.conclusion = [nonconta, conta, "MAJEUR"]
+            self.conclusion = [nonconta, conta, "MAJEURE"]
         elif conta == 0:
             self.conclusion = [nonconta, conta, 0]
         else:
@@ -167,7 +167,7 @@ class Echantillon:
 
         # Det contamination 
         if conta >= self.seuil_nbre_marqueurs:
-            if self.conclusion[2] == "MAJEUR":
+            if self.conclusion[2] == "MAJEURE":
                 self.contamine = True
             elif self.conclusion[2] >= 5:
                 self.contamine = True
