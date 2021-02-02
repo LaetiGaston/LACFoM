@@ -104,7 +104,7 @@ class Echantillon:
                     pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
                     # Test petit pic dans echo
                     ECHO = False
-                    #print("conta",contaminant,pic_conta)
+                    print("conta",contaminant,pic_conta)
                     for pic_foetus in self.foetus.data[marqueur]["Allele"]:
                         #print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
                         if round(pic_foetus - pic_conta,2) == 1.0:
@@ -134,9 +134,9 @@ class Echantillon:
                         self.foetus.data[marqueur]["conclusion"] = "Non informatif"
                         self.foetus.data[marqueur]["détails"] = "Mêmes allèles que la mère"
 
-            # check allele non herite mere dans echo a -1 de la mere [reste plus que les cas 2 alleles]
+            # check allele foetus à n+1 de la mere ( mere dans echo a -1 de la mere [reste plus que les cas 2 alleles])
             #elif common_element([ x-1 for x in list(set(self.foetus.data[marqueur]["Allele"]).difference(set(self.mere.data[marqueur]["Allele"]))) ], list(set(self.mere.data[marqueur]["Allele"]).difference(set(self.foetus.data[marqueur]["Allele"])))):
-            elif common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], self.mere.data[marqueur]["Allele"]):
+            elif common_element([ x-1 for x in self.foetus.data[marqueur]["Allele"] ], list(set(self.mere.data[marqueur]["Allele"]).difference(set(self.foetus.data[marqueur]["Allele"])))):
                 self.foetus.data[marqueur]["détails"] = "Echo"
                 self.foetus.data[marqueur]["conclusion"] = "Non informatif"
             else:
@@ -269,10 +269,11 @@ class Echantillon:
         list_alleles = []
         marqueurs = list(self.foetus.data)
         marqueurs.remove("AMEL")
-        val = "M: " if parent == 0 else "P: "
+        orig = "M: " if parent == 0 else "P: "
         for marqueur in marqueurs:
             if self.foetus.data[marqueur]["concordance"][parent] == "NON":
-                list_alleles.append(val + str(self.mere.data[marqueur]["Allele"]) + " F: " + str(self.foetus.data[marqueur]["Allele"]))
+                val = str(self.mere.data[marqueur]["Allele"]) if parent == 0 else str(self.pere.data[marqueur]["Allele"])
+                list_alleles.append(orig + val + " F: " + str(self.foetus.data[marqueur]["Allele"]))
             else:
                 list_alleles.append("")
         return list_alleles

@@ -263,6 +263,7 @@ class LigneTableau(BoxLayout):
     color_mode = ObjectProperty(None)
     color_text = ListProperty((256, 256, 256, 1))
     color_text2 = ListProperty((256, 256, 256, 1))
+    color_text3 = ListProperty((256, 256, 256, 1))
     large = ObjectProperty(None)
 
 
@@ -342,7 +343,8 @@ class ResAnalyse(BoxLayout):
                                       t_col3='[b]' + "Détails" + '[/b]',
                                       color_mode=(75 / 255, 127 / 255, 209 / 255, 1),
                                       color_text=(0.949, 0.945, 0.945, 1),
-                                      color_text2=(0.949, 0.945, 0.945, 1))
+                                      color_text2=(0.949, 0.945, 0.945, 1),
+                                      color_text3=(0.949, 0.945, 0.945, 1))
                 if Echantillon.get_contamine():
                     self.ids.TButtonContamine.state = 'down'
 
@@ -350,10 +352,12 @@ class ResAnalyse(BoxLayout):
                     self.ids.TButtonNonContamine.state = 'down'
                 self.ids.le_tableau.add_widget(entete)
 
+                # Determination de la couleur de la ccl
+
                 parti_conclu = InfosConclusion(
                     TLigneInfo1="Nombre de marqueurs informatifs non contaminés: " + str(conclusion[0]),
                     TLigneInfo2="Nombre de marqueurs informatifs contaminés: " + str(conclusion[1]),
-                    TLigneInfo3="Moyenne du pourcentage de contamination: " + str(conclusion[2])
+                    TLigneInfo3="Moyenne %contamination: " + str(conclusion[2])
                 )
                 self.ids.ensemble_info.add_widget(parti_conclu)
 
@@ -372,7 +376,8 @@ class ResAnalyse(BoxLayout):
                                          t_col2=t_col2,
                                          t_col3=tableau_df["Détails M/F"][i],
                                          color_mode=colmode,
-                                         color_text2=colortext)
+                                         color_text2=colortext,
+                                         color_text3=colortext)
                     self.ids.le_tableau.add_widget(ligne)
             else:
                 if Echantillon.concordance_pere_foet or Echantillon.concordance_pere_foet == None:
@@ -381,7 +386,8 @@ class ResAnalyse(BoxLayout):
                                           t_col3="Détails",
                                           color_mode=(75 / 255, 127 / 255, 209 / 255, 1),
                                           color_text=(0.949, 0.945, 0.945, 1),
-                                          color_text2=(0.949, 0.945, 0.945, 1)
+                                          color_text2=(0.949, 0.945, 0.945, 1),
+                                          color_text3=(0.949, 0.945, 0.945, 1)
                                           )
                     self.ids.le_tableau.add_widget(entete)
 
@@ -401,7 +407,8 @@ class ResAnalyse(BoxLayout):
                                              t_col2=tableau_df["Concordance Mere/Foetus"][i],
                                              t_col3=tableau_df["Détails M/F"][i],
                                              color_mode=colmode,
-                                             color_text2=colortext)
+                                             color_text2=colortext,
+                                             color_text3=colortext)
                         self.ids.le_tableau.add_widget(ligne)
 
 
@@ -411,6 +418,7 @@ class ResAnalyse(BoxLayout):
                                           t_col3="Détails M/F", color_mode=(75 / 255, 127 / 255, 209 / 255, 1),
                                           color_text=(0.949, 0.945, 0.945, 1),
                                           color_text2=(0.949, 0.945, 0.945, 1),
+                                          color_text3=(0.949, 0.945, 0.945, 1),
                                           large=0.20)
 
                     col4 = Label(text="Concordance Pere/Foetus", color=(0.949, 0.945, 0.945, 1))
@@ -445,7 +453,8 @@ class ResAnalyse(BoxLayout):
                                                      t_col2=tableau_df["Concordance Mere/Foetus"][i],
                                                      t_col3=tableau_df["Détails M/F"][i],
                                                      color_mode=colmode,
-                                                     color_text2=colortext)
+                                                     color_text2=colortext,
+                                                     color_text3=colortext)
 
                                 col5 = Label(text=tableau_df["Détails P/F"][i], color=(256, 256, 256, 1),
                                              text_size=(self.width, None))
@@ -914,7 +923,7 @@ class EcranFctMethod(GridLayout):
             else:
                 conclu = self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"]
         except Exception as e:
-            logger.error("Echec atribution variable conclu", exc_info=True)
+            logger.error("Echec attribution variable conclu", exc_info=True)
             return
         while True:
             try:
