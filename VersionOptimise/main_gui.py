@@ -239,6 +239,14 @@ class InfosConclusion(BoxLayout):
     TLigneInfo1 = ObjectProperty(None)
     TLigneInfo2 = ObjectProperty(None)
     TLigneInfo3 = ObjectProperty(None)
+    TValueInfo1 = ObjectProperty(None)
+    TValueInfo2 = ObjectProperty(None)
+    TValueInfo3 = ObjectProperty(None)
+    colorvalue1 = ListProperty((256, 256, 256, 1))
+    colorvalue2 = ListProperty((256, 256, 256, 1))
+    colorvalue3 = ListProperty((256, 256, 256, 1))
+    sizeinfo3 = ListProperty((0.5, 1))
+    sizevalue3 = ListProperty((0.5, 1))
 
 
 class ColSupp(BoxLayout):
@@ -347,17 +355,33 @@ class ResAnalyse(BoxLayout):
                                       color_text3=(0.949, 0.945, 0.945, 1))
                 if Echantillon.get_contamine():
                     self.ids.TButtonContamine.state = 'down'
+                    colorinfo3 = (241 / 256, 31 / 256, 82 / 256, 1)
+                    if isinstance(conclusion[2],str) and conclusion[2] != "MAJEURE":
+                        sizeinfo3 = (0.5, 1)
+                        sizevalue3 = (0.5, 1)
+                    else:
+                        sizeinfo3 = (0.8, 1)
+                        sizevalue3 = (0.2, 1)
 
                 else:
                     self.ids.TButtonNonContamine.state = 'down'
+                    colorinfo3 = (23 / 256, 116 / 256, 10 / 256, 1)
+                    sizeinfo3 = (0.8, 1)
+                    sizevalue3 = (0.2, 1)
                 self.ids.le_tableau.add_widget(entete)
 
-                # Determination de la couleur de la ccl
-
                 parti_conclu = InfosConclusion(
-                    TLigneInfo1="Nombre de marqueurs informatifs non contaminés: " + str(conclusion[0]),
-                    TLigneInfo2="Nombre de marqueurs informatifs contaminés: " + str(conclusion[1]),
-                    TLigneInfo3="Moyenne %contamination: " + str(conclusion[2])
+                    TLigneInfo1="Nombre de marqueurs informatifs non contaminés:",
+                    TLigneInfo2="Nombre de marqueurs informatifs contaminés:",
+                    TLigneInfo3="Moyenne % contamination:",
+                    TValueInfo1=str(conclusion[0]),
+                    TValueInfo2=str(conclusion[1]),
+                    TValueInfo3=str(conclusion[2]),
+                    colorvalue1=(23 / 256, 116 / 256, 10 / 256, 1),
+                    colorvalue2=(241 / 256, 31 / 256, 82 / 256, 1),
+                    colorvalue3=colorinfo3,
+                    sizeinfo3=sizeinfo3,
+                    sizevalue3=sizevalue3
                 )
                 self.ids.ensemble_info.add_widget(parti_conclu)
 
@@ -466,6 +490,7 @@ class ResAnalyse(BoxLayout):
 
 
         except Exception as e:
+            logger.error(e)
             logger.error("Remplissage de la page échouée", exc_info=True)
         logger.info("Remplissage de la page réussi")
 
@@ -928,17 +953,16 @@ class EcranFctMethod(GridLayout):
         while True:
             try:
                 pdf_feuille_resultat.creation_PDF(os.path.join("temp_pdf"),
-                                                  self.InfoParametre["Echantillon"],
-                                                  self.InfoParametre["nom_pdf"],
+                                                  self.ids.les_onglets.current_tab.content.InfoParametre["Echantillon"],
+                                                  self.ids.les_onglets.current_tab.content.InfoParametre["nom_pdf"],
                                                   conclu,
-                                                  self.InfoParametre["nom_utilisateur"],
+                                                  self.ids.les_onglets.current_tab.content.InfoParametre["nom_utilisateur"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["hauteur"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["nb"],
                                                   None,
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["temoin_positif"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["temoin_negatif"],
-                                                  self.ids.les_onglets.current_tab.content.InfoParametre[
-                                                      "Entite_appli"],
+                                                  self.ids.les_onglets.current_tab.content.InfoParametre["Entite_appli"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["Emetteur"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["Version"])
                 self.dismiss_popup()

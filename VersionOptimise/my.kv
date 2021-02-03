@@ -695,12 +695,17 @@ ScreenManagement:
                     pos: self.pos
                     size: self.size
             Label:
-                halign:"center"
+                halign:"left"
                 text:root.TLigneInfo1
                 color: [256, 256, 256, 1]
-                size_hint: 1, 1
+                size_hint: 0.8, 1
                 text_size: self.width, None
-
+            Label:
+                halign: 'center'
+                text: root.TValueInfo1
+                color: root.colorvalue1
+                size_hint:0.2, 1
+                text_size: self.width, None
         BoxLayout:
             canvas:
                 Color:
@@ -710,10 +715,16 @@ ScreenManagement:
                     pos: self.pos
                     size: self.size
             Label:
-                halign:"center"
+                halign:"left"
                 text:root.TLigneInfo2
                 color: [256, 256, 256, 1]
-                size_hint: 1, 1
+                size_hint: 0.8, 1
+                text_size: self.width, None
+            Label:
+                halign: 'center'
+                text: root.TValueInfo2
+                color: root.colorvalue2
+                size_hint: 0.2, 1
                 text_size: self.width, None
         BoxLayout:
             canvas:
@@ -724,10 +735,16 @@ ScreenManagement:
                     pos: self.pos
                     size: self.size
             Label:
-                halign:"center"
+                halign:"left"
                 text:root.TLigneInfo3
                 color: [256, 256, 256, 1]
-                size_hint: 1, 1
+                size_hint: root.sizeinfo3
+                text_size: self.width, None
+            Label:
+                halign: 'center'
+                text: root.TValueInfo3
+                color: root.colorvalue3
+                size_hint: root.sizevalue3
                 text_size: self.width, None
 
 <ConcordanceEtSexe>:

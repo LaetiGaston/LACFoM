@@ -172,7 +172,8 @@ class Echantillon:
             elif self.conclusion[2] >= 5:
                 self.contamine = True
             else:
-                self.contamine = False
+                self.conclusion[2] = str(self.conclusion[2]) + " (Biologiquement non significatif)"
+                self.contamine = True
         else:
             self.contamine = False
 

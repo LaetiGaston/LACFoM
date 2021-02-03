@@ -1,0 +1,895 @@
+#:kivy 1.10.1
+#:import lv kivy.uix.listview
+#:import la kivy.adapters.listadapter
+
+#version application 1.0
+
+ScreenManagement:
+    
+
+    EcranPremier:
+    EcranFct:
+
+
+
+<EcranPremier>:
+    name:"EcranAccueil"
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            padding:20
+            orientation:"horizontal"
+            Image:
+                source:"logo.png"
+            Label:
+                text:"LACFoM"
+                font_size: "70sp"
+                color: [256, 256, 256, 1]
+        BoxLayout:
+            padding:100
+            orientation: 'vertical'
+
+            BoxLayout:
+                Label:
+                    size_hint:(0.40,0.40)
+                    text:" Indiquer un nom d'utilisateur : "
+                    font_size: "30sp"
+                    color: [256, 256, 256, 1]
+
+                BoxLayout:
+                    size_hint:(0.18,0.40)
+                    TextInput:
+                        id: text_nom_utilisateur
+                        text:""
+                        size_hint_y: None
+                        height: self.minimum_height
+                        multiline: False
+            BoxLayout:
+                Label:
+                    size_hint:(0.40,0.40)
+                    text:" Choisir un fichier : "
+                    font_size: "30sp"
+                    color: [256, 256, 256, 1]
+
+                BoxLayout:
+                    size_hint:(0.18,0.40)
+                    Button:
+
+                        background_normal: ''
+                        background_color: (75/255, 127/255, 209/255,1)
+                        text: "Ouvrir"
+                        font_size: "24sp"
+
+                        on_release:
+                            if(text_nom_utilisateur.text!=""):root.show_load(text_nom_utilisateur.text)
+
+
+<EcranFct>:
+    name: 'ecran_principale'
+    EcranFctMethod:
+        id:ecranMethod
+        panel:root
+
+
+<EcranFctMethod>:
+    id: ecranfct
+    spacing: 10
+    padding: 10
+    cols: 1
+    rows: 2
+    titre: "Echantillon"
+    corps:""
+
+    BoxLayout:
+        id:barreOutils
+
+        size_hint_y:  0.05
+        canvas:
+            Color:
+                rgba:0.07,0.10,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'horizontal'
+            height: 10
+            dropdown1: dropdown1.__self__
+            dropdown2: dropdown2.__self__
+
+
+            Button:
+                background_normal: ''
+                background_color: (0.07,0.10,0,1)
+                color: [0.949, 0.945, 0.945, 1]
+                id:bouton_fichier
+                text: "Fichier"
+                font_size: "15sp"
+                on_parent: dropdown1.dismiss()
+                on_release: dropdown1.open(self)
+
+
+
+                DropDown:
+                    id: dropdown1
+
+                    Button:
+                        height: 44
+                        size_hint_y: barreOutils.size_hint_y
+                        background_normal: ''
+                        background_color: (0.07,0.10,0,1)
+                        color: [0.949, 0.945, 0.945, 1]
+                        id:bouton_ouvrir
+                        text: 'Ouvrir'
+                        size_hint_y: None
+                        on_release: ecranfct.show_load()
+                        on_release:dropdown1.dismiss()
+                    Button:
+                        height: 44
+                        background_normal: ''
+                        background_color: (0.07,0.10,0,1)
+                        color: [0.949, 0.945, 0.945, 1]
+                        id:boutton_quitter
+                        text: 'Quitter'
+
+                        size_hint_y: None
+                        on_release: ecranfct.quitter()
+
+            Button:
+                background_normal: ''
+                background_color: (0.07,0.10,0,1)
+                color: [0.949, 0.945, 0.945, 1]
+                id:bouton_option
+                text: "Options"
+                font_size: "15sp"
+                on_parent: dropdown2.dismiss()
+                on_release: dropdown2.open(self)
+
+                DropDown:
+                    id: dropdown2
+
+                    Button:
+                        height: 44
+                        background_normal: ''
+                        background_color: (0.07,0.10,0,1)
+                        color: [0.949, 0.945, 0.945, 1]
+
+                        text: 'Param\u00e8tres'
+                        size_hint_y: None
+                        on_release: ecranfct.ouverture_parametres()
+                        on_release:dropdown2.dismiss()
+                    Button:
+                        height: 44
+                        background_normal: ''
+                        background_color: (0.07,0.10,0,1)
+                        color: [0.949, 0.945, 0.945, 1]
+                        text: 'Documentation'
+                        size_hint_y: None
+                        on_release:ecranfct.ouverture_manuel()
+                        on_release:dropdown2.dismiss()
+            BoxLayout:
+        BoxLayout:
+
+    BoxLayout:
+        BoxLayout:
+            TableOnglets:
+                id:les_onglets
+                tab_width: None
+                do_default_tab: False
+
+#<GetIdentity>:
+#    id:getidentity
+#    GridLayout:
+#        cols:3
+#        canvas:
+#            Color:
+#                rgba:(75/255, 127/255, 209/255, 1)
+
+#<SubWidgetFather>:
+#    GridLayout:
+#        cols:4
+#        rows:4
+#        Label:
+#            text:""
+#        Label:
+#            text:"Mère"
+#            color: [256, 256, 256, 1]
+#        Label:
+#            text:"Foetus"
+#            color: [256, 256, 256, 1]
+#        Label:
+#            text:"Père"
+#            color: [256, 256, 256, 1]
+#        Label:
+#            text:root.data[0]
+#            color: [256, 256, 256, 1]
+#        CheckBox:
+#            id:a1
+#            group:"mother"
+#        CheckBox:
+#            id:a2
+#            group:"mother"
+#        CheckBox:
+#            id:a3
+#            group:"mother"
+#        Label:
+#            text:root.data[1]
+#            color: [256, 256, 256, 1]
+#        CheckBox:
+#            id:b1
+#            group:"foetus"
+#        CheckBox:
+#            id:b2
+#            group:"foetus"
+#        CheckBox:
+#            id:b3
+#            group:"foetus"
+#        Label:
+#            text:root.data[2]
+#            color: [256, 256, 256, 1]
+#        CheckBox:
+#            id:c1
+#            group:"father"
+#        CheckBox:
+#            id:c2
+#            group:"father"
+#        CheckBox:
+#            id:c3
+#            group:"father"
+
+#<SubWidgetNoFather>:
+#    GridLayout:
+#        cols:3
+#        rows:3
+#        Label:
+#            text:""
+#        Label:
+#            text:"Mère"
+#            color: [256, 256, 256, 1]
+#        Label:
+#            text:"Foetus"
+#            color: [256, 256, 256, 1]
+#        Label:
+#            text:root.data[0]
+#            color: [256, 256, 256, 1]
+#        CheckBox:
+#            id:a1
+#            group:"mother"
+#        CheckBox:
+#            id:a2
+#            group:"mother"
+#        Label:
+#            text:root.data[1]
+#            color: [256, 256, 256, 1]
+#        CheckBox:
+#            id:b1
+#            group:"foetus"
+#        CheckBox:
+#            id:b2
+#            group:"foetus"
+
+#<SubwidgetButton>:            
+#    Button:
+#        id:Button
+#        background_normal: ''
+#        background_color: (75/255, 127/255, 209/255,1)
+#        color: [0.949, 0.945, 0.945, 1]
+#        text:root.text
+#        size_hint_x: None
+#        size_hint_y: None
+#        width: 100
+
+<ParametreDialog>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:3
+                rectangle:(self.x, self.y, self.width, self.height)
+            Color:
+
+                rgba:0.949, 0.945, 0.945, 1
+
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        BoxLayout:
+            orientation:"vertical"
+            Label:
+                text:"Param\u00e8tres de d\u00e9tection de contamination"
+                color: [256, 256, 256, 1]
+            BoxLayout:
+                padding:40,0,40,60
+                BoxLayout:
+
+                    Label:
+                        id: lab_premier_para
+                        color: [256, 256, 256, 1]
+                        text: "Nombre minimum de marqueurs informatifs contamin\u00e9s (d\u00e9faut:2)"
+                        size_hint_y: None
+                        text_size :self.size
+                        pos:self.pos
+                    Label:
+                        size_hint_x:0.07
+                        color: [256, 256, 256, 1]
+                        text: "N:"
+                        size_hint_y: None
+                        text_size :self.size
+                BoxLayout:
+
+                    TextInput:
+                        id: text_input1_para
+                        text:root.nb
+                        size_hint_y: None
+                        height: self.minimum_height
+                        multiline: False
+
+            BoxLayout:
+                padding:40,0,40,60
+                BoxLayout:
+
+                    Label:
+                        id:lab_troisieme_para
+                        color: [256, 256, 256, 1]
+                        text: "Hauteur de pics discriminant un all\u00e8le contamin\u00e9 d'un all\u00e8le normal (d\u00e9faut:1/3)"
+                        size_hint_y: None
+                        text_size :self.size
+
+                    Label:
+                        size_hint_x:0.07
+                        color: [256, 256, 256, 1]
+                        text: "H:"
+                        size_hint_y: None
+                        text_size :self.size
+                BoxLayout:
+
+                    TextInput:
+                        id: text_input3_para
+                        text:root.hauteur
+                        size_hint_y: None
+                        height: self.minimum_height
+                        multiline: False
+        BoxLayout:
+            orientation:"vertical"
+            Label:
+                text:"Param\u00e8tres \u00e9diteur"
+                color: [256, 256, 256, 1]
+            BoxLayout:
+                padding:40,0,40,60
+                BoxLayout:
+
+                    Label:
+                        id:lab_quatrieme_para
+                        color: [256, 256, 256, 1]
+                        text: "Emetteur (d\u00e9faut: PBP-P2A-GEN):"
+                        size_hint_y: None
+                        text_size :self.size
+                BoxLayout:
+
+                    TextInput:
+                        id: text_input4_para
+                        text:root.emetteur
+                        size_hint_y: None
+                        height: self.minimum_height
+                        multiline: False
+            BoxLayout:
+                padding:40,0,40,60
+                BoxLayout:
+
+                    Label:
+                        id:lab_cinqueime_para
+                        color: [256, 256, 256, 1]
+                        text: "Entit\u00e9 d'application (d\u00e9faut: PBP-PTBM):"
+                        size_hint_y: None
+                        text_size :self.size
+                BoxLayout:
+
+                    TextInput:
+                        id: text_input5_para
+                        text:root.entite
+                        size_hint_y: None
+                        height: self.minimum_height
+                        multiline: False
+
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            spacing:10
+            padding:10
+            Button:
+                background_normal: ''
+                background_color: (75/255, 127/255, 209/255,1)
+                color: [0.949, 0.945, 0.945, 1]
+                text: "Annuler"
+                on_release: root.cancel()
+            Button:
+                background_normal: ''
+                background_color: (75/255, 127/255, 209/255,1)
+                color: [0.949, 0.945, 0.945, 1]
+                text: "R\u00e9initialiser"
+                on_release:
+                    text_input1_para.text="2"
+                    text_input3_para.text= "1\u002F3"
+                    text_input4_para.text= "PBP-P2A-GEN"
+                    text_input5_para.text= "PBP-PTBM"
+
+            Button:
+                background_normal: ''
+                background_color: (75/255, 127/255, 209/255,1)
+                color: [0.949, 0.945, 0.945, 1]
+                text: "Valider"
+                on_release: root.save_parametres(text_input1_para.text,text_input3_para.text,text_input4_para.text,text_input5_para.text)
+
+<ResAnalyse>:
+    id:resanalyse
+    titre:""
+    padding:20
+
+    canvas:
+        Color:
+            rgba:(75/255, 127/255, 209/255,1)
+        Line:
+            width:3
+            rectangle:(self.x, self.y, self.width, self.height)
+        Color:
+            rgba:0.949, 0.945, 0.945, 1
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+
+
+    GridLayout:
+        id: resultat_grd_frame
+        cols: 1
+        rows: 4
+        spacing:20
+        padding:60,10,60,10
+        BoxLayout:
+            spacing:6
+            id:TitreEtConco
+            size_hint_y:  0.10
+
+            BoxLayout:
+                size_hint_x:  0.54
+                orientation:"vertical"
+                Label:
+                    color: [256, 256, 256, 1]
+
+                    text: "Echantillon : " + root.titre
+                    halign:"center"
+                    text_size: self.width, None
+                Label:
+                    color: [256, 256, 256, 1]
+
+                    text: "Num Foetus : " + root.nfoetus
+                    halign:"center"
+                    text_size: self.width, None
+            BoxLayout:
+                size_hint_x:  0.54
+                orientation:"vertical"
+                Label:
+                    color: [256, 256, 256, 1]
+
+                    text: "Num M\u00e8re : " + root.nmere
+                    halign:"center"
+                    text_size: self.width, None
+                Label:
+                    color: [256, 256, 256, 1]
+
+                    text: "Num P\u00e8re : " + root.npere
+                    halign:"center"
+                    text_size: self.width, None
+
+
+
+        BoxLayout:
+
+            GridLayout:
+                cols: 1
+                rows: 16
+                orientation: "vertical"
+                id:le_tableau
+
+
+                canvas:
+                    Color:
+                        rgba:(75/255, 127/255, 209/255,1)
+                    Line:
+                        width:2
+                        rectangle:(self.x, self.y, self.width, self.height)
+
+
+        BoxLayout:
+            id:ensemble_info
+            orientation: "horizontal"
+            size_hint_y:  0.25
+
+
+            BoxLayout:
+                id:togglebutonEtLabel
+                spacing:7
+                orientation:"vertical"
+                canvas:
+                    Color:
+                        rgba:(75/255, 127/255, 209/255,1)
+                    Line:
+                        width:2
+                        rectangle:(self.x, self.y, self.width, self.height)
+                BoxLayout:
+                    padding:10
+                    Label:
+                        size_hint_y: 0.30
+                        id:labelPrelev
+                        halign:"center"
+                        text_size: self.width, None
+                        text:u'Le pr\u00e9l\u00e8vement foetal est: '
+                        color: [256, 256, 256, 1]
+                BoxLayout:
+                    id:boxToggle
+                    padding:42,0,42,7
+                    orientation: "horizontal"
+                    ToggleButton:
+                        size_hint_y: 0.84
+                        background_normal:""
+                        background_down:""
+                        background_color:(220/255, 220/255, 220/255,1)
+                        id:TButtonNonContamine
+                        text:"Non Contamin\u00e9"
+                        group:root.NvGroupe
+                        font_size: 17
+                        on_state:root.InfoParametre["choix"]=0
+                        on_state:root.CouleurBouton(0)
+                        color: [256, 256, 256, 1]
+                    ToggleButton:
+                        font_size: 17
+                        background_normal:""
+                        background_color:(220/255, 220/255, 220/255,1)
+                        size_hint_y: 0.84
+                        background_down:""
+                        color: [256, 256, 256, 1]
+                        id:TButtonContamine
+                        text: "Contamin\u00e9"
+                        group:root.NvGroupe
+                        on_state:root.InfoParametre["choix"]=1
+                        on_state:root.CouleurBouton(1)
+        BoxLayout:
+            spacing:70
+            size_hint_y:  0.13
+
+            BoxLayout:
+                spacing:10
+                orientation: "vertical"
+                BoxLayout:
+                    BoxLayout:
+                    BoxLayout:
+                        padding:40,0,40,0
+
+                        Button:
+                            font_size: self.height/1.4
+                            id:bouton_export
+                            background_normal: ''
+                            background_color: (75/255, 127/255, 209/255,1)
+                            color: [0.949, 0.945, 0.945, 1]
+                            on_release:root.save()
+                            text:'Export PDF'
+                    BoxLayout:
+                BoxLayout:
+                    size_hint_y:  0.50
+                    orientation:"horizontal"
+                    Label:
+                        halign:"left"
+                        color: [256, 256, 256, 1]
+                        text:"Nombre minimum de marqueurs informatifs contamin\u00e9s="+root.N
+                        text_size: self.width, None
+                    Label:
+                        halign:"left"
+                        color: [256, 256, 256, 1]
+                        text_size: self.width, None
+                        text:"Hauteur de pics discriminant un all\u00e8le contamin\u00e9 d'un all\u00e8le normal="+root.H
+
+
+
+<LigneTableau>:
+
+    canvas:
+        Color:
+            rgba:root.color_mode
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+    Label:
+        width: root.width - dp(10)
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:1
+                rectangle:(self.x, self.y, self.width, self.height)
+        markup:True
+        id:col1
+        size_hint: 1, 1
+        color:root.color_text
+        text:'[b]'+ root.t_col1+'[/b]'
+        text_size: self.width, None
+        halign: 'center'
+         #font_size: self.height/1.2
+
+    Label:
+        width: root.width - dp(10)
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:1
+                rectangle:(self.x, self.y, self.width, self.height)
+        markup:True
+        id:col2
+        size_hint: 1, 1
+        text_size: self.width, None
+        halign: 'center'
+        color:root.color_text2
+        text:root.t_col2
+    Label:
+        width: root.width - dp(10)
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:1
+                rectangle:(self.x, self.y, self.width, self.height)
+        id:col3
+        markup:True
+
+        color:root.color_text
+        text:str(root.t_col3)
+        size_hint: 1, 1
+        text_size: self.width, None
+        halign: 'center'
+
+<ColSupp>:
+    Label:
+        width: root.width - dp(10)
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:1
+                rectangle:(self.x, self.y, self.width, self.height)
+        id:col3
+        markup:True
+
+        color:root.color
+        text:root.t_col
+        size_hint: 1, 1
+        text_size: self.width, None
+        halign: 'center'
+
+<InfosConclusion>:
+
+    BoxLayout:
+        padding:2
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:2
+                rectangle:(self.x, self.y, self.width, self.height)
+        orientation:"vertical"
+        BoxLayout:
+            canvas:
+                Color:
+                    rgba:(49/255, 140/255, 231/255,0.2)
+
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                halign:"center"
+                text:root.TLigneInfo1
+                color: [256, 256, 256, 1]
+                size_hint: 1, 1
+                text_size: self.width, None
+
+        BoxLayout:
+            canvas:
+                Color:
+                    rgba:(0.949, 0.945, 0.945, 1)
+
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                halign:"center"
+                text:root.TLigneInfo2
+                color: [256, 256, 256, 1]
+                size_hint: 1, 1
+                text_size: self.width, None
+        BoxLayout:
+            canvas:
+                Color:
+                    rgba:(49/255, 140/255, 231/255,0.2)
+
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                halign:"center"
+                text:root.TLigneInfo3
+                color: [256, 256, 256, 1]
+                size_hint: 1, 1
+                text_size: self.width, None
+
+<ConcordanceEtSexe>:
+    orientation:"horizontal"
+    size_hint_x:  1.5
+
+
+    BoxLayout:
+        size_hint_x:0.40
+        padding:2
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:2
+                rectangle:(self.x, self.y, self.width, self.height)
+        orientation:"vertical"
+        Label:
+            text:root.info_sexe
+            color: [256, 256, 256, 1]
+            size_hint: 1, 1
+            halign:"center"
+            text_size: self.width, None
+
+    BoxLayout:
+        size_hint_x:0.45
+        padding:3
+        
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:2
+                rectangle:(self.x, self.y, self.width, self.height)
+
+        orientation:"vertical"
+        BoxLayout:
+            id:tem_pos
+            size_hint_y:  0.80
+            orientation:"horizontal"
+            Label:
+                color: [256, 256, 256, 1]
+                text:"T\u00e9moin positif:"
+                size_hint: 1, 1
+                text_size: self.width, None
+                halign:"center"
+
+            Image:
+                size_hint_x:  0.25
+                source:root.image_pos
+
+        BoxLayout:
+            id:tem_neg
+            size_hint_y:  0.80
+            orientation:"horizontal"
+            Label:
+                color: [256, 256, 256, 1]
+                text:"T\u00e9moin n\u00e9gatif:"
+                size_hint: 1, 1
+                halign:"center"
+                text_size: self.width, None
+
+            Image:
+                size_hint_x:  0.25
+                source:root.image_neg
+    BoxLayout:
+        padding:2
+        orientation:"vertical"
+        canvas:
+            Color:
+                rgba:(75/255, 127/255, 209/255,1)
+            Line:
+                width:2
+                rectangle:(self.x, self.y, self.width, self.height)
+
+        BoxLayout:
+
+            orientation:"vertical"
+            BoxLayout:
+                size_hint_y:  0.80
+                orientation:"horizontal"
+                Label:
+                    color: [256, 256, 256, 1]
+                    text:"Concordance M\u00e8re/Foetus :"
+                    size_hint: 1, 1
+                    text_size: self.width, None
+                    halign:"center"
+
+                Label:
+                    size_hint_x:0.30
+                    color: root.colorconcoM
+                    text:root.conco_M
+
+                    text_size: self.width, None
+
+            BoxLayout:
+                id:test
+                size_hint_y:  0.80
+                orientation:"horizontal"
+                Label:
+                    color: [256, 256, 256, 1]
+                    text:"Concordance P\u00e8re/Foetus :"
+                    size_hint: 1, 1
+                    halign:"center"
+                    text_size: self.width, None
+
+                Label:
+                    size_hint_x:0.30
+                    halign: 'left'
+                    color: root.colorconcoP
+                    text:root.conco_P
+
+                    text_size: self.width, None
+
+
+<CloseableHeader>:
+    background_color:(75*3/255, 127*3/255, 209*3/255,1)
+
+    text:root.text1
+    # variable tab_width
+    size_hint_x: None
+    width: self.texture_size[0] + 40
+    BoxLayout:
+        pos: root.pos
+        size_hint: None, None
+        size: root.size
+        padding: 3
+        spacing:5
+        Label:
+
+
+        BoxLayout:
+            size_hint: None, 1
+            orientation: 'vertical'
+            width: 22
+            Image:
+                source: 'croix.png'
+                on_touch_down:
+                    if self.collide_point(*args[1].pos) :root.supr_onglets(root)
+
+<LeaveDialog>:
+    orientation:"vertical"
+    Label:
+        text:"\u00CAtes-vous s\u00FBre de vouloir quitter ? \n(V\u00e9rifier qu'aucun des pdfs ne soient \n encore ouverts dans un lecteur de pdfs)"
+    BoxLayout:
+        size_hint_y:0.20
+        orientation:"horizontal"
+        Button:
+            text:"Annuler"
+            on_release:root.cancel()
+        Button:
+            text:"Quitter"
+            on_release:root.quitter()
+
+
+    
+
+
+
+
+
+<ListItemButton>:
+    background_normal:""
+    selected_color: 75/255, 127/255, 209/255,1
+    deselected_color: 180/255, 180/255, 180/255,1

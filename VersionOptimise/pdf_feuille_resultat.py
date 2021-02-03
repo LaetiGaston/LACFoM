@@ -18,6 +18,8 @@ def get_contamination(choix_utilisateur, nom_utilisateur):
         Contamination="L'échantillon n'est pas contaminé (conclusion modifiée manuellement par "+nom_utilisateur+")"
     elif choix_utilisateur==3:
         Contamination="L'échantillon est contaminé (conclusion modifiée manuellement par "+nom_utilisateur+")"
+    elif choix_utilisateur==4:
+        Contamination = "L'échantillon est contaminé à moins de 5% (conclusion automatique) donc non significatif"
     else:
         Contamination="Analyse non réalisée"
     return Contamination
@@ -551,11 +553,16 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     if Concordance_mf != "NON":
         P_nb_Nconta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=green>"+str(nb_info_Nconta)+"</font></font></b>",style)
         P_nb_conta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>"+str(nb_info_Conta)+"</font></font></b>",style)
-        P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne des pourcentages de contamination : </font>"+str(moy_conta)+"</b></font>",style)
+        if " " in moy_conta:
+            P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font>" + str(
+                moy_conta.split(" ")[0] ) + "</b></font>", style)
+            #P_com = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font>" + str(moy_conta.split(" ")[1] ) + "</b></font>", style)
+        else:
+            P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font>"+str(moy_conta)+"</b></font>",style)
     else:
         P_nb_Nconta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=red>Non calculé</font></font></b>",style)
         P_nb_conta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>Non calculé</font></font></b>",style)
-        P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne des pourcentages de contamination : </font><font color=red>Non calculé</font></b></font>",style)
+        P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font><font color=red>Non calculé</font></b></font>",style)
         
     P_conta_echantillon = Paragraph("<font size=10><b>"+style_resultat_conclusion(Contamination)+"</b></font>",style)
     

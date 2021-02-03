@@ -58,3 +58,7 @@ Commande bash dans le dossier contenant le fichier spec :
     python -m PyInstaller LACFoM.spec
 
 La version exe se trouvera dans le dossier "dist" qui sera créé à la suite de cette commande.
+
+
+
+python -m PyInstaller --name LACFoM --icon C:\Users\laeti\Documents\2020\LACFoM\VersionOptimiseTest\logo.ico main_gui.py
