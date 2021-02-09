@@ -355,11 +355,12 @@ class ResAnalyse(BoxLayout):
                                       color_text3=(0.949, 0.945, 0.945, 1))
                 if Echantillon.get_contamine():
                     self.ids.TButtonContamine.state = 'down'
-                    colorinfo3 = (241 / 256, 31 / 256, 82 / 256, 1)
                     if isinstance(conclusion[2],str) and conclusion[2] != "MAJEURE":
+                        colorinfo3 = (255 / 256, 99 / 256, 71 / 256, 1)
                         sizeinfo3 = (0.5, 1)
                         sizevalue3 = (0.5, 1)
                     else:
+                        colorinfo3 = (241 / 256, 31 / 256, 82 / 256, 1)
                         sizeinfo3 = (0.8, 1)
                         sizevalue3 = (0.2, 1)
 
@@ -502,8 +503,12 @@ class ResAnalyse(BoxLayout):
             self.ids.TButtonContamine.background_color = (220 / 255, 220 / 255, 220 / 255, 1)
             self.ids.TButtonContamine.color = [130 / 256, 130 / 256, 130 / 256, 1]
         else:
-            self.ids.TButtonContamine.background_color = (241 / 256, 31 / 256, 82 / 256, 1)
-            self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1]
+            if isinstance(self.InfoParametre["df_detail"][2],str) and self.InfoParametre["df_detail"][2] != "MAJEURE":
+                self.ids.TButtonContamine.background_color  = (255 / 256, 99 / 256, 71 / 256, 1)
+                self.ids.TButtonContamine.color = [0.698, 0.133, 0.133, 1]
+            else:
+                self.ids.TButtonContamine.background_color = (241 / 256, 31 / 256, 82 / 256, 1)
+                self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1]
             self.ids.TButtonNonContamine.background_color = (220 / 256, 220 / 256, 220 / 256, 1)
             self.ids.TButtonNonContamine.color = [130 / 256, 130 / 256, 130 / 256, 1]
 
@@ -945,6 +950,12 @@ class EcranFctMethod(GridLayout):
             elif (self.ids.les_onglets.current_tab.content.InfoParametre["choix"] == 1 and
                   self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"] == 0):
                 conclu = 3
+            elif (self.ids.les_onglets.current_tab.content.InfoParametre["choix"] == 0 and
+                  self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"] == 2):
+                conclu = 4
+            elif (self.ids.les_onglets.current_tab.content.InfoParametre["choix"] == 1 and
+                  self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"] == 2):
+                conclu = 5
             else:
                 conclu = self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"]
         except Exception as e:

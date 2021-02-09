@@ -168,14 +168,14 @@ class Echantillon:
         # Det contamination 
         if conta >= self.seuil_nbre_marqueurs:
             if self.conclusion[2] == "MAJEURE":
-                self.contamine = True
+                self.contamine = 1
             elif self.conclusion[2] >= 5:
-                self.contamine = True
+                self.contamine = 1
             else:
                 self.conclusion[2] = str(self.conclusion[2]) + " (Biologiquement non significatif)"
-                self.contamine = True
+                self.contamine = 2
         else:
-            self.contamine = False
+            self.contamine = 0
 
     def compute_heterozygote_contamination(self, marqueur):
         pic = list(set(self.foetus.data[marqueur]["Allele"]) - set(self.mere.data[marqueur]["Allele"]))[0]

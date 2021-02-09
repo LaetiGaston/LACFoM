@@ -18,8 +18,10 @@ def get_contamination(choix_utilisateur, nom_utilisateur):
         Contamination="L'échantillon n'est pas contaminé (conclusion modifiée manuellement par "+nom_utilisateur+")"
     elif choix_utilisateur==3:
         Contamination="L'échantillon est contaminé (conclusion modifiée manuellement par "+nom_utilisateur+")"
+    elif choix_utilisateur==5:
+        Contamination = "L'échantillon est contaminé à moins de 5% donc non significatif (conclusion automatique)"
     elif choix_utilisateur==4:
-        Contamination = "L'échantillon est contaminé à moins de 5% (conclusion automatique) donc non significatif"
+        Contamination = "L'échantillon n'est pas contaminé, conta inf. 5%  donc non significatif (conclusion modifiée manuellement par " +nom_utilisateur+ ")"
     else:
         Contamination="Analyse non réalisée"
     return Contamination
@@ -90,11 +92,15 @@ def style_resultat_tableau(mot):
 
 def style_resultat_conclusion(mot):
     if mot[0:33] == "L'échantillon n'est pas contaminé":
+        if "5%" in mot:
+            return "<font color=orange><font size=10>"+mot+"</font></font>"
         return "<font color=green><font size=13>"+mot+"</font></font>"
     if mot=="OUI":
         return "<font color=green><font size=11>"+mot+"</font></font>"
     if mot == "NON":
         return "<font color=red><font size=11>"+mot+"</font></font>"
+    if "5%" in mot:
+        return "<font color=orange><font size=10>" + mot + "</font></font>" ##TODO change ccl color
     if mot != "ABS":
         return "<font color=red><font size=13>"+mot+"</font></font>"
     return mot
@@ -553,12 +559,17 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     if Concordance_mf != "NON":
         P_nb_Nconta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=green>"+str(nb_info_Nconta)+"</font></font></b>",style)
         P_nb_conta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>"+str(nb_info_Conta)+"</font></font></b>",style)
-        if " " in moy_conta:
-            P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font>" + str(
-                moy_conta.split(" ")[0] ) + "</b></font>", style)
+        if isinstance(moy_conta,str):
+            if " " in moy_conta:
+                P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font><font color=orange>" + str(moy_conta.split(" ")[0]) + "</font></b></font>", style)
+            else:
+                P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font><font color=red>" + str(moy_conta) + "</font></b></font>", style)
             #P_com = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font>" + str(moy_conta.split(" ")[1] ) + "</b></font>", style)
+        elif moy_conta < 5:
+            P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font><font color=green>" + str(moy_conta) + "</font></b></font>", style)
+
         else:
-            P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font>"+str(moy_conta)+"</b></font>",style)
+            P_moy = Paragraph("<font size=10><b><font color=darkblue>Moyenne % contamination : </font><font color=red>"+str(moy_conta)+"</font></b></font>",style)
     else:
         P_nb_Nconta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs non contaminés : </font><font color=red>Non calculé</font></font></b>",style)
         P_nb_conta = Paragraph("<b><font size=10><font color=darkblue>Marqueurs informatifs contaminés : </font><font color=red>Non calculé</font></font></b>",style)
