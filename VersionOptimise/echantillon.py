@@ -104,7 +104,7 @@ class Echantillon:
                     pic_conta = self.foetus.data[marqueur]["Allele"][self.foetus.data[marqueur]["Hauteur"].index(contaminant)]
                     # Test petit pic dans echo
                     ECHO = False
-                    print("conta",contaminant,pic_conta)
+                    #print("conta",contaminant,pic_conta)
                     for pic_foetus in self.foetus.data[marqueur]["Allele"]:
                         #print("difference: ",pic_foetus, pic_conta,round(abs(pic_foetus - pic_conta),2))
                         if round(pic_foetus - pic_conta,2) == 1.0:
@@ -253,7 +253,7 @@ class Echantillon:
         return resultat
 
     def get_id(self):
-        return self.mere.ID
+        return self.foetus.ID
 
     def get_contamine(self):
         return self.contamine

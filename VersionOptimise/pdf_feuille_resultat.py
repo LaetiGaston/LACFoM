@@ -21,9 +21,11 @@ def get_contamination(choix_utilisateur, nom_utilisateur):
     elif choix_utilisateur==5:
         Contamination = "L'échantillon est contaminé à moins de 5% donc non significatif (conclusion automatique)"
     elif choix_utilisateur==4:
-        Contamination = "L'échantillon n'est pas contaminé, conta inf. 5%  donc non significatif (conclusion modifiée manuellement par " +nom_utilisateur+ ")"
-    else:
+        Contamination = "L'échantillon n'est pas contaminé, conta inf. 5%  donc non significatif (modifié par " +nom_utilisateur+ ")"
+    elif choix_utilisateur==6:
         Contamination="Analyse non réalisée"
+    else:
+        Contamination="Erreur d'assignation de code..."
     return Contamination
 
 def def_variable(nom_projet,nom_fichier_mere,nom_fichier_foetus,nom_fichier_pere,Sexe,dataframe,det_dataframe,choix_utilisateur, nom_utilisateur, presence_pere):
@@ -93,14 +95,14 @@ def style_resultat_tableau(mot):
 def style_resultat_conclusion(mot):
     if mot[0:33] == "L'échantillon n'est pas contaminé":
         if "5%" in mot:
-            return "<font color=orange><font size=10>"+mot+"</font></font>"
+            return "<font color=orange><font size=13>"+mot+"</font></font>"
         return "<font color=green><font size=13>"+mot+"</font></font>"
     if mot=="OUI":
         return "<font color=green><font size=11>"+mot+"</font></font>"
     if mot == "NON":
         return "<font color=red><font size=11>"+mot+"</font></font>"
     if "5%" in mot:
-        return "<font color=orange><font size=10>" + mot + "</font></font>" ##TODO change ccl color
+        return "<font color=orange><font size=13>" + mot + "</font></font>" ##TODO change ccl color
     if mot != "ABS":
         return "<font color=red><font size=13>"+mot+"</font></font>"
     return mot
@@ -136,7 +138,7 @@ def creat_struct_pdf(Concordance_mf, Concordance_pf,Entite_d_Application,Emetteu
     
     entite = Paragraph("<font size=12><b>Entité d'application :</b> "+Entite_d_Application+"</font>",style)
     emetteur = Paragraph("<font size=12><b>Emetteur :</b>"+Emetteur+" </font>",style)
-    no_version = Paragraph("<font size=12><b>"+version+"</b></font>",style)
+    no_version = Paragraph("<font size=12><b>LACFoM v"+version+"</b></font>",style)
     doc = Paragraph("<para align=center spaceb=3><font size=12>DOCUMENT D’ENREGISTREMENT</font></para>",style)
     page = Paragraph("<font size=12>Page : 1/1</font>",style)
     chu_titre = Paragraph("<para align=center spaceb=3><b><font size=15><font color=white>Feuille de résultats Recherche de contamination maternelle Kit PowerPlex 16 ® </font></font></b></para>",styles["Title"])
@@ -611,11 +613,15 @@ def disposition_pdf(CHU_HEADER,HEADER,nom_utilisateur,tableau_principal,canv,Con
     
     aH = aH - 5
     w, h = P_conta_echantillon.wrap(aW,aH)
-    P_conta_echantillon.drawOn(canv, alignement_col_gauche_bis,aH-h)
+    #P_conta_echantillon.drawOn(canv, alignement_col_gauche_bis,aH-h)
 
     if Concordance_mf == "NON" and Concordance_pf== "NON":
         aH = aH - 55
         Par.drawOn(canv,80, aH)
+    elif Concordance_mf == "NON":
+        P_conta_echantillon.drawOn(canv, alignement_col_gauche_bis+80, aH - h-15)
+    else:
+        P_conta_echantillon.drawOn(canv, alignement_col_gauche_bis, aH - h)
         
     canv.save()
 

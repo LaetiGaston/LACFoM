@@ -11,7 +11,7 @@ Regrouper l'ensemble des scripts python (pas le .kv, voir par la suite) ainsi qu
 
 Commande bash dans ce nouveau dossier créé:
 
-    python -m PyInstaller --name LACFoM --icon C:\Users\gauvr\Desktop\V_demo_6\logo.ico main_gui.py
+    python -m PyInstaller --name LACFoM --icon C:\Users\laeti\Documents\2020\LACFoM\VersionOptimise\logo.ico main_gui.py
 
 (remplacer chemin du logo)
 

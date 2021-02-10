@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# version application 1.0
+# version application 5.0
 
 
 import copy
@@ -47,6 +47,8 @@ import mere
 import pere
 import temoin
 import pdf_feuille_resultat
+
+version = 5.0
 
 kivy.require('1.10.1')
 Window.clearcolor = (0.949, 0.945, 0.945, 1)
@@ -767,13 +769,9 @@ class EcranFctMethod(GridLayout):
 
     def cpt_onglets(self, titre):
         if titre in self.onglets:
-            final_titre = titre + "(" + str(self.onglets[titre]) + ")"
             self.onglets[titre] += 1
-            return final_titre
         else:
-
             self.onglets[titre] = 1
-            return titre
 
 #    def dismiss_popupID(self):
 #        self.dismiss()
@@ -802,8 +800,7 @@ class EcranFctMethod(GridLayout):
             # lecture du fichier et traitement
             data = traitement.lecture_fichier(os.path.join(path, filename[0]))
             if not isinstance(data, list):
-                self._popupEr = Popup(title="Erreur", content=Label(text=Echantillon),
-                            size_hint=(0.3, 0.3))
+                self._popupEr = Popup(title="Erreur", content=Label(text=data), size_hint=(0.3, 0.3))
                 self._popupEr.open()
                 return
             self.echantillons = data[0]
@@ -865,7 +862,13 @@ class EcranFctMethod(GridLayout):
             Echantillon.analyse_marqueur()
             logger.info("Fonction analyse_données réussi")
             # récupération et attribution de données
-            self.titre = self.cpt_onglets(Echantillon.get_id())
+            self.cpt_onglets(Echantillon.get_id())
+            if self.onglets[Echantillon.get_id()]>1:
+                self.titre = str(Echantillon.get_id()) + "(" + str(self.onglets[Echantillon.get_id()]-1) + ")"
+                self.InfoParametre["nom_pdf"] = str(Echantillon.get_id()) + "_" + str(self.onglets[Echantillon.get_id()]-1) + "_" + self.InfoParametre["nom_utilisateur"]
+            else:
+                self.titre = str(Echantillon.get_id())
+                self.InfoParametre["nom_pdf"] = str(Echantillon.get_id()) + "_" + self.InfoParametre["nom_utilisateur"]
             nv_onglets = CloseableHeader(text1=self.titre + "  ", panel=self.ids.les_onglets,
                                          supr_onglets=self.supr_onglets)
 
@@ -877,7 +880,7 @@ class EcranFctMethod(GridLayout):
             self.InfoParametre["nom_mere"] = Echantillon.mere.ID
             self.InfoParametre["Emetteur"] = self.emetteur
             self.InfoParametre["Entite_appli"] = self.entite
-            self.InfoParametre["nom_pdf"] = self.titre + "_" + self.InfoParametre["nom_utilisateur"]
+            self.InfoParametre["nom_pdf"] = str(Echantillon.get_id()) + "_" + str(self.onglets[Echantillon.get_id()]) + "_" + self.InfoParametre["nom_utilisateur"]
             self.InfoParametre["Version"] = str(version)
             logger.info("Récupération des données réussi")
             if Echantillon.concordance_pere_foet == None:
@@ -957,7 +960,8 @@ class EcranFctMethod(GridLayout):
                   self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"] == 2):
                 conclu = 5
             else:
-                conclu = self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"]
+                #self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"]
+                conclu = 6
         except Exception as e:
             logger.error("Echec attribution variable conclu", exc_info=True)
             return
@@ -1056,7 +1060,7 @@ class MyApp(App):
 
     Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
-    title = 'LACFoM'
+    title = 'LACFoM v' + str(version)
 
     def build(self):
         self.icon = 'logo.png'
@@ -1101,6 +1105,5 @@ Factory.register('CloseableHeader', cls=CloseableHeader)
 Factory.register('LeaveDialog', cls=LeaveDialog)
 Factory.register('col_supp', cls=ColSupp)
 if __name__ == '__main__':
-    version = 1.0
     app = MyApp()
     app.run()
