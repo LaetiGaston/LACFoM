@@ -832,13 +832,14 @@ ScreenManagement:
                     size_hint: 1, 1
                     text_size: self.width, None
                     halign:"center"
-
-                Label:
-                    size_hint_x:0.30
-                    color: root.colorconcoM
-                    text:root.conco_M
-
-                    text_size: self.width, None
+                Image:
+                    size_hint_x:  0.25
+                    source:root.conco_M
+                #Label:
+                #    size_hint_x:0.30
+                #    color: root.colorconcoM
+                #    text:root.conco_M
+                #    text_size: self.width, None
 
             BoxLayout:
                 id:test
@@ -851,13 +852,15 @@ ScreenManagement:
                     halign:"center"
                     text_size: self.width, None
 
-                Label:
-                    size_hint_x:0.30
-                    halign: 'left'
-                    color: root.colorconcoP
-                    text:root.conco_P
-
-                    text_size: self.width, None
+                Image:
+                    size_hint_x:  0.25
+                    source:root.conco_P
+                #Label:
+                #    size_hint_x:0.30
+                #    halign: 'left'
+                #    color: root.colorconcoP
+                #    text:root.conco_P
+                #    text_size: self.width, None
 
 
 <CloseableHeader>:

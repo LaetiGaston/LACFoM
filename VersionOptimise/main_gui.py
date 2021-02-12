@@ -260,8 +260,6 @@ class ConcordanceEtSexe(BoxLayout):
     info_sexe = ObjectProperty(None)
     conco_M = ObjectProperty(None)
     conco_P = ObjectProperty(None)
-    colorconcoM = ListProperty((256, 256, 256, 1))
-    colorconcoP = ListProperty((256, 256, 256, 1))
     image_pos=ObjectProperty(None)
     image_neg=ObjectProperty(None)
 
@@ -295,6 +293,9 @@ class ResAnalyse(BoxLayout):
     path = ""
     H = ObjectProperty(None)
     N = ObjectProperty(None)
+    emptyset_image = "emptyset.png"
+    check_image = "check.png"
+    cross_image = "cross.png"
 
     def attribut(self, InfoParametre):
         self.InfoParametre = copy.copy(InfoParametre)
@@ -309,40 +310,38 @@ class ResAnalyse(BoxLayout):
             #check des temoins
             #TODO : gestion exception
             if len(Echantillon.tpos.check()) > 0:
-                final_decision_pos = "cross.png"
+                final_decision_pos = self.cross_image
                 self.InfoParametre["temoin_positif"]=0
             else:
-                final_decision_pos = "check.png"
+                final_decision_pos = self.check_image
                 self.InfoParametre["temoin_positif"]=1
             if len(Echantillon.tneg.check()) > 0:
-                final_decision_neg = "cross.png"
+                final_decision_neg = self.cross_image
                 self.InfoParametre["temoin_negatif"]=0
             else:
-                final_decision_neg = "check.png"
+                final_decision_neg = self.check_image
                 self.InfoParametre["temoin_negatif"]=1
             
             
 
             #####Concordance#######
             if(Echantillon.concordance_pere_foet):
-                concordance_pere="OUI"
+                concordance_pere=self.check_image
             elif( Echantillon.concordance_pere_foet==False):
-                concordance_pere="NON"
+                concordance_pere=self.cross_image
                 self.colorconcoP = (241 / 256, 31 / 256, 82 / 256, 1)
             else:
-                concordance_pere="ABS"
+                concordance_pere=self.emptyset_image
                 self.colorconcoP = ( 256, 256,256, 1)
             if(Echantillon.concordance_mere_foet):
-                concordance_mere="OUI"
+                concordance_mere=self.check_image
             else:
-                concordance_mere="NON"
+                concordance_mere=self.cross_image
                 self.colorconcoM = (241 / 256, 31 / 256, 82 / 256, 1)
             
             BoxConcordance = ConcordanceEtSexe(info_sexe="Sexe foetus : " + Echantillon.foetus.get_sexe(),
                                                conco_M=concordance_mere,
                                                conco_P=concordance_pere,
-                                               colorconcoM=self.colorconcoM,
-                                               colorconcoP=self.colorconcoP,
                                                image_pos = final_decision_pos,
                                                image_neg = final_decision_neg)
             self.ids.TitreEtConco.add_widget(BoxConcordance)
@@ -361,6 +360,10 @@ class ResAnalyse(BoxLayout):
                         colorinfo3 = (255 / 256, 99 / 256, 71 / 256, 1)
                         sizeinfo3 = (0.5, 1)
                         sizevalue3 = (0.5, 1)
+                    elif conclusion[2] == "MAJEURE":
+                        colorinfo3 = (139 / 256, 0 / 256, 0 / 256, 1)
+                        sizeinfo3 = (0.8, 1)
+                        sizevalue3 = (0.2, 1)
                     else:
                         colorinfo3 = (241 / 256, 31 / 256, 82 / 256, 1)
                         sizeinfo3 = (0.8, 1)
@@ -498,16 +501,22 @@ class ResAnalyse(BoxLayout):
         logger.info("Remplissage de la page réussi")
 
     def CouleurBouton(self, id):
-
+        # non contamine
         if id == 0:
             self.ids.TButtonNonContamine.background_color = (23 / 256, 116 / 256, 10 / 256, 1)
             self.ids.TButtonNonContamine.color = [0.949, 0.945, 0.945, 1]
             self.ids.TButtonContamine.background_color = (220 / 255, 220 / 255, 220 / 255, 1)
             self.ids.TButtonContamine.color = [130 / 256, 130 / 256, 130 / 256, 1]
+        # contamine
         else:
+            # conta inf 5%
             if isinstance(self.InfoParametre["df_detail"][2],str) and self.InfoParametre["df_detail"][2] != "MAJEURE":
                 self.ids.TButtonContamine.background_color  = (255 / 256, 99 / 256, 71 / 256, 1)
                 self.ids.TButtonContamine.color = [0.698, 0.133, 0.133, 1]
+            # conta majeure
+            elif self.InfoParametre["df_detail"][2] == "MAJEURE":
+                self.ids.TButtonContamine.background_color = (139 / 256, 0 / 256, 0 / 256, 1)
+                self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1]
             else:
                 self.ids.TButtonContamine.background_color = (241 / 256, 31 / 256, 82 / 256, 1)
                 self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1]

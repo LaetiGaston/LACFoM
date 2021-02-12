@@ -19,9 +19,9 @@ def get_contamination(choix_utilisateur, nom_utilisateur):
     elif choix_utilisateur==3:
         Contamination="L'échantillon est contaminé (conclusion modifiée manuellement par "+nom_utilisateur+")"
     elif choix_utilisateur==5:
-        Contamination = "L'échantillon est contaminé à moins de 5% donc non significatif (conclusion automatique)"
+        Contamination = "L'échantillon est contaminé à moins de 5% donc biologiquement non significatif (conclusion automatique)"
     elif choix_utilisateur==4:
-        Contamination = "L'échantillon n'est pas contaminé, conta inf. 5%  donc non significatif (modifié par " +nom_utilisateur+ ")"
+        Contamination = "L'échantillon n'est pas contaminé, conta inf. 5%  donc biologiquement non significatif (modifié par " +nom_utilisateur+ ")"
     elif choix_utilisateur==6:
         Contamination="Analyse non réalisée"
     else:
@@ -92,6 +92,7 @@ def style_resultat_tableau(mot):
         else:
             return Paragraph("<para align=center spaceb=3><font size=11><font color=black>"+mot+"</font></font></para>",style)
 
+
 def style_resultat_conclusion(mot):
     if mot[0:33] == "L'échantillon n'est pas contaminé":
         if "5%" in mot:
@@ -105,6 +106,8 @@ def style_resultat_conclusion(mot):
         return "<font color=orange><font size=13>" + mot + "</font></font>" ##TODO change ccl color
     if mot != "ABS":
         return "<font color=red><font size=13>"+mot+"</font></font>"
+    else:
+        print("error: Cas non pris en compte")
     return mot
 
 '''Création des flowables et définition du style graphique sauf pour tableau central'''
