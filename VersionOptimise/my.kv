@@ -23,8 +23,10 @@ ScreenManagement:
                 source:"logo.png"
             Label:
                 text:"LACFoM"
-                font_size: "70sp"
-                color: [256, 256, 256, 1]
+                bold:True
+                italic:True
+                font_size: "100sp"
+                color: root.main_color
         BoxLayout:
             padding:100
             orientation: 'vertical'
@@ -56,7 +58,7 @@ ScreenManagement:
                     Button:
 
                         background_normal: ''
-                        background_color: (75/255, 127/255, 209/255,1)
+                        background_color: root.main_color
                         text: "Ouvrir"
                         font_size: "24sp"
 
@@ -183,7 +185,7 @@ ScreenManagement:
 #        cols:3
 #        canvas:
 #            Color:
-#                rgba:(75/255, 127/255, 209/255, 1)
+#                rgba:root.main_color
 
 #<SubWidgetFather>:
 #    GridLayout:
@@ -272,7 +274,7 @@ ScreenManagement:
 #    Button:
 #        id:Button
 #        background_normal: ''
-#        background_color: (75/255, 127/255, 209/255,1)
+#        background_color: root.main_color
 #        color: [0.949, 0.945, 0.945, 1]
 #        text:root.text
 #        size_hint_x: None
@@ -283,7 +285,7 @@ ScreenManagement:
     BoxLayout:
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:3
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -301,7 +303,7 @@ ScreenManagement:
             orientation:"vertical"
             Label:
                 text:"Param\u00e8tres de d\u00e9tection de contamination"
-                color: [256, 256, 256, 1]
+                color: root.main_color
             BoxLayout:
                 padding:40,0,40,60
                 BoxLayout:
@@ -357,7 +359,7 @@ ScreenManagement:
             orientation:"vertical"
             Label:
                 text:"Param\u00e8tres \u00e9diteur"
-                color: [256, 256, 256, 1]
+                color: root.main_color
             BoxLayout:
                 padding:40,0,40,60
                 BoxLayout:
@@ -403,13 +405,13 @@ ScreenManagement:
             padding:10
             Button:
                 background_normal: ''
-                background_color: (75/255, 127/255, 209/255,1)
+                background_color: root.main_color
                 color: [0.949, 0.945, 0.945, 1]
                 text: "Annuler"
                 on_release: root.cancel()
             Button:
                 background_normal: ''
-                background_color: (75/255, 127/255, 209/255,1)
+                background_color: root.main_color
                 color: [0.949, 0.945, 0.945, 1]
                 text: "R\u00e9initialiser"
                 on_release:
@@ -420,7 +422,7 @@ ScreenManagement:
 
             Button:
                 background_normal: ''
-                background_color: (75/255, 127/255, 209/255,1)
+                background_color: root.main_color
                 color: [0.949, 0.945, 0.945, 1]
                 text: "Valider"
                 on_release: root.save_parametres(text_input1_para.text,text_input3_para.text,text_input4_para.text,text_input5_para.text)
@@ -432,7 +434,7 @@ ScreenManagement:
 
     canvas:
         Color:
-            rgba:(75/255, 127/255, 209/255,1)
+            rgba:root.main_color
         Line:
             width:3
             rectangle:(self.x, self.y, self.width, self.height)
@@ -501,7 +503,7 @@ ScreenManagement:
 
                 canvas:
                     Color:
-                        rgba:(75/255, 127/255, 209/255,1)
+                        rgba:root.main_color
                     Line:
                         width:2
                         rectangle:(self.x, self.y, self.width, self.height)
@@ -519,7 +521,7 @@ ScreenManagement:
                 orientation:"vertical"
                 canvas:
                     Color:
-                        rgba:(75/255, 127/255, 209/255,1)
+                        rgba:root.main_color
                     Line:
                         width:2
                         rectangle:(self.x, self.y, self.width, self.height)
@@ -576,7 +578,7 @@ ScreenManagement:
                             font_size: self.height/1.4
                             id:bouton_export
                             background_normal: ''
-                            background_color: (75/255, 127/255, 209/255,1)
+                            background_color: root.main_color
                             color: [0.949, 0.945, 0.945, 1]
                             on_release:root.save()
                             text:'Export PDF'
@@ -612,7 +614,7 @@ ScreenManagement:
         width: root.width - dp(10)
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:1
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -629,7 +631,7 @@ ScreenManagement:
         width: root.width - dp(10)
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:1
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -644,7 +646,7 @@ ScreenManagement:
         width: root.width - dp(10)
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:1
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -662,7 +664,7 @@ ScreenManagement:
         width: root.width - dp(10)
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:1
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -681,7 +683,7 @@ ScreenManagement:
         padding:2
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:2
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -757,7 +759,7 @@ ScreenManagement:
         padding:2
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:2
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -775,7 +777,7 @@ ScreenManagement:
         
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:2
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -815,7 +817,7 @@ ScreenManagement:
         orientation:"vertical"
         canvas:
             Color:
-                rgba:(75/255, 127/255, 209/255,1)
+                rgba:root.main_color
             Line:
                 width:2
                 rectangle:(self.x, self.y, self.width, self.height)
@@ -864,7 +866,7 @@ ScreenManagement:
 
 
 <CloseableHeader>:
-    background_color:(75*3/255, 127*3/255, 209*3/255,1)
+    background_color:(0*3/255, 87*3/255, 130*3/255,1) #(75*3/255, 127*3/255, 209*3/255,1)
 
     text:root.text1
     # variable tab_width
@@ -911,5 +913,5 @@ ScreenManagement:
 
 <ListItemButton>:
     background_normal:""
-    selected_color: 75/255, 127/255, 209/255,1
+    selected_color: 0/255, 87/255, 130/255,1 # main color
     deselected_color: 180/255, 180/255, 180/255,1

@@ -158,6 +158,35 @@ class Echantillon:
                     contamajeur = True
                 else:
                     valconta += self.foetus.data[marqueur]["détails"]
+        ## Determination de la conclusion
+        # Pas assez de marqueur informatifs pour conclure
+        if conta+nonconta < 2:
+            self.conclusion = [nonconta, conta, "-"]
+            self.contamine = -1
+        # nb marqueurs conta superieur au seuil
+        elif conta >= self.seuil_nbre_marqueurs:
+            # conta majeur
+            if contamajeur:
+                self.conclusion = [nonconta, conta, "MAJEURE"]
+                self.contamine = 4
+            # conta superieur a 5%
+            elif round(valconta/conta, 2)>=5:
+                self.conclusion = [nonconta, conta, round(valconta / conta, 2)]
+                self.contamine = 3
+            # conta inf a 5%
+            else:
+                self.conclusion = [nonconta, conta, str(round(valconta / conta, 2)) + " (Biologiquement non significatif)"]
+                self.contamine = 2
+        # aucun marqueur contamine
+        elif conta == 0:
+            self.conclusion = [nonconta, conta, 0]
+            self.contamine = 0
+        # nb de marqueurs conta inf au seuil
+        else:
+            self.conclusion = [nonconta, conta, round(valconta / conta, 2)]
+            self.contamine = 1
+
+        """
         if contamajeur:
             self.conclusion = [nonconta, conta, "MAJEURE"]
         elif conta == 0:
@@ -176,6 +205,7 @@ class Echantillon:
                 self.contamine = 2
         else:
             self.contamine = 0
+        """
 
     def compute_heterozygote_contamination(self, marqueur):
         pic = list(set(self.foetus.data[marqueur]["Allele"]) - set(self.mere.data[marqueur]["Allele"]))[0]

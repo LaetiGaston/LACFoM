@@ -65,17 +65,39 @@ logging.basicConfig(filename=log_filename, filemode='w', format='%(name)s - %(le
                     level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+#color values
+main_blue=(0/255,87/255,130/255,1)
+roi=(30/255, 105/255,178/255,1)
+azur=(71/255, 188/255, 202/255, 1)
+ciel=(210/255, 233/255, 250/255,1)
+bleuet=(202/255, 215/255, 239/255,1)
+red=(204/255,9/255,53/255,1)
+darkred=(139 / 256, 0 / 256, 0 / 256, 1)
+peche=(249/255, 217/255, 218/255, 1)
+violine=(173/255,4/255,112/255,1)
+rosepale=(244/255, 200/255, 223/255, 1)
+green=(92/255,178/255,72/255,1)
+pistache=(136/255, 191/255, 87/255, 1)
+vertdeau=(184/255, 217/255, 171/255, 1)
+orange=(243/255,144/255,0/255,1)
+miel=(249/255, 187/255, 91/255, 1)
+corail=(233/255,78/255,27/255,1)
+beige=(212/255, 180/255, 156/255, 1)
+rose=(238/255,119/255,171/255,1)
+saumon=(241/255, 138/255, 120/255,1)
+
 
 class ScreenManagement(ScreenManager):
     pass
 
 
 class EcranPremier(Screen):
+    main_color = ObjectProperty(main_blue)
     def show_load(self, nom_utilisateur):
         try:
             self.manager.get_screen('ecran_principale').ids.ecranMethod.InfoParametre["nom_utilisateur"] = str(nom_utilisateur)
             self.manager.get_screen('ecran_principale').ids.ecranMethod.show_load()
-            #TODO Verifier que l'inversion des lignes dde Theo fonctionne toujours correctement
+            #TODO Verifier que l'inversion des lignes de Theo fonctionne toujours correctement
             #self.manager.get_screen('ecran_principale').ids.ecranMethod.InfoParametre["nom_utilisateur"] = str(nom_utilisateur)
         except Exception as e:
             logger.error("Chargement écran échoué", exc_info=True)
@@ -113,6 +135,7 @@ class TableOnglets(TabbedPanel):
 class CloseableHeader(TabbedPanelHeader):
     panel = ObjectProperty(None)
     text1 = ObjectProperty(None)
+    main_color = ObjectProperty(main_blue)
     supr_onglets = ObjectProperty(None)
 
 
@@ -235,6 +258,7 @@ class ParametreDialog(FloatLayout):
     emetteur = ObjectProperty(None)
     entite = ObjectProperty(None)
     reinit_para = ObjectProperty(None)
+    main_color = ObjectProperty(None)
 
 
 class InfosConclusion(BoxLayout):
@@ -244,6 +268,7 @@ class InfosConclusion(BoxLayout):
     TValueInfo1 = ObjectProperty(None)
     TValueInfo2 = ObjectProperty(None)
     TValueInfo3 = ObjectProperty(None)
+    main_color=ObjectProperty(main_blue)
     colorvalue1 = ListProperty((256, 256, 256, 1))
     colorvalue2 = ListProperty((256, 256, 256, 1))
     colorvalue3 = ListProperty((256, 256, 256, 1))
@@ -253,11 +278,13 @@ class InfosConclusion(BoxLayout):
 
 class ColSupp(BoxLayout):
     color = ObjectProperty(None)
+    main_color = ObjectProperty(main_blue)
     t_col = ObjectProperty(None)
 
 
 class ConcordanceEtSexe(BoxLayout):
     info_sexe = ObjectProperty(None)
+    main_color = ObjectProperty(main_blue)
     conco_M = ObjectProperty(None)
     conco_P = ObjectProperty(None)
     image_pos=ObjectProperty(None)
@@ -269,6 +296,7 @@ class LigneTableau(BoxLayout):
     t_col2 = ObjectProperty(None)
     t_col3 = ObjectProperty(None)
     color_mode = ObjectProperty(None)
+    main_color = ListProperty(main_blue)
     color_text = ListProperty((256, 256, 256, 1))
     color_text2 = ListProperty((256, 256, 256, 1))
     color_text3 = ListProperty((256, 256, 256, 1))
@@ -284,8 +312,9 @@ class ResAnalyse(BoxLayout):
     titre = ObjectProperty(None)
     NvGroupe = ObjectProperty(None)
     show_save = ObjectProperty(None)
-    colorconcoM = (256, 256, 256, 1)
-    colorconcoP = (256, 256, 256, 1)
+    main_color = ListProperty(main_blue)
+    colorconcoM = ListProperty((256, 256, 256, 1))
+    colorconcoP = ListProperty((256, 256, 256, 1))
     SaveLog = ObjectProperty(None)
     down_button = ObjectProperty(None)
     InfoParametre = {}
@@ -329,17 +358,18 @@ class ResAnalyse(BoxLayout):
                 concordance_pere=self.check_image
             elif( Echantillon.concordance_pere_foet==False):
                 concordance_pere=self.cross_image
-                self.colorconcoP = (241 / 256, 31 / 256, 82 / 256, 1)
+                #self.colorconcoP = red #(241 / 256, 31 / 256, 82 / 256, 1)
             else:
                 concordance_pere=self.emptyset_image
-                self.colorconcoP = ( 256, 256,256, 1)
+                #self.colorconcoP = ( 256, 256,256, 1)
             if(Echantillon.concordance_mere_foet):
                 concordance_mere=self.check_image
             else:
                 concordance_mere=self.cross_image
-                self.colorconcoM = (241 / 256, 31 / 256, 82 / 256, 1)
+                #self.colorconcoM = red #(241 / 256, 31 / 256, 82 / 256, 1)
             
             BoxConcordance = ConcordanceEtSexe(info_sexe="Sexe foetus : " + Echantillon.foetus.get_sexe(),
+                                               main_color=main_blue,
                                                conco_M=concordance_mere,
                                                conco_P=concordance_pere,
                                                image_pos = final_decision_pos,
@@ -350,41 +380,80 @@ class ResAnalyse(BoxLayout):
                 entete = LigneTableau(t_col1='[b]' + "Marqueurs" + '[/b]',
                                       t_col2='[b]' + "Conclusions" + '[/b]',
                                       t_col3='[b]' + "Détails" + '[/b]',
-                                      color_mode=(75 / 255, 127 / 255, 209 / 255, 1),
+                                      color_mode=main_blue, #(75 / 255, 127 / 255, 209 / 255, 1),
+                                      main_color=main_blue,
                                       color_text=(0.949, 0.945, 0.945, 1),
                                       color_text2=(0.949, 0.945, 0.945, 1),
                                       color_text3=(0.949, 0.945, 0.945, 1))
-                if Echantillon.get_contamine():
+                # Gerer les boutons de conta et message si -1
+                # nb de marqueur significatif insuffisant
+                if Echantillon.get_contamine() == -1:
+                    self.ids.togglebutonEtLabel.clear_widgets()
+                    new_label = Label(text="Nombre de marqueurs significatifs insuffisants",
+                                      color=red,  # (241 / 256, 31 / 256, 82 / 256, 1),
+                                      font_size=30)
+                    self.ids.togglebutonEtLabel.add_widget(new_label)
+                    self.ids.labelPrelev.font_size = 30
+                    self.ids.labelPrelev.color = red  # (241 / 256, 31 / 256, 82 / 256, 1)
+                else:
+                    # conta inf 5%
+                    if Echantillon.get_contamine() == 2:
+                        self.ids.TButtonContamine.state = 'down'
+                        colorinfo3 = corail  # (255 / 256, 99 / 256, 71 / 256, 1)
+                        sizeinfo3 = (0.5, 1)
+                        sizevalue3 = (0.5, 1)
+                    # conta majeure
+                    elif Echantillon.get_contamine() == 4:
+                        self.ids.TButtonContamine.state = 'down'
+                        colorinfo3 = darkred  # (139 / 256, 0 / 256, 0 / 256, 1)
+                        sizeinfo3 = (0.8, 1)
+                        sizevalue3 = (0.2, 1)
+                    # conta
+                    elif Echantillon.get_contamine() == 3:
+                        self.ids.TButtonContamine.state = 'down'
+                        colorinfo3 = red  # (241 / 256, 31 / 256, 82 / 256, 1)
+                        sizeinfo3 = (0.8, 1)
+                        sizevalue3 = (0.2, 1)
+                    # non conta
+                    else:
+                        self.ids.TButtonNonContamine.state = 'down'
+                        colorinfo3 = green  # (23 / 256, 116 / 256, 10 / 256, 1)
+                        sizeinfo3 = (0.8, 1)
+                        sizevalue3 = (0.2, 1)
+                    """
+                if Echantillon.get_contamine() in [3, 4]:
                     self.ids.TButtonContamine.state = 'down'
                     if isinstance(conclusion[2],str) and conclusion[2] != "MAJEURE":
-                        colorinfo3 = (255 / 256, 99 / 256, 71 / 256, 1)
+                        colorinfo3 = corail #(255 / 256, 99 / 256, 71 / 256, 1)
                         sizeinfo3 = (0.5, 1)
                         sizevalue3 = (0.5, 1)
                     elif conclusion[2] == "MAJEURE":
-                        colorinfo3 = (139 / 256, 0 / 256, 0 / 256, 1)
+                        colorinfo3 = darkred #(139 / 256, 0 / 256, 0 / 256, 1)
                         sizeinfo3 = (0.8, 1)
                         sizevalue3 = (0.2, 1)
                     else:
-                        colorinfo3 = (241 / 256, 31 / 256, 82 / 256, 1)
+                        colorinfo3 = red #(241 / 256, 31 / 256, 82 / 256, 1)
                         sizeinfo3 = (0.8, 1)
                         sizevalue3 = (0.2, 1)
 
                 else:
                     self.ids.TButtonNonContamine.state = 'down'
-                    colorinfo3 = (23 / 256, 116 / 256, 10 / 256, 1)
+                    colorinfo3 = green #(23 / 256, 116 / 256, 10 / 256, 1)
                     sizeinfo3 = (0.8, 1)
                     sizevalue3 = (0.2, 1)
-                self.ids.le_tableau.add_widget(entete)
+                    """
+                    self.ids.le_tableau.add_widget(entete)
 
                 parti_conclu = InfosConclusion(
+                    main_color=main_blue,
                     TLigneInfo1="Nombre de marqueurs informatifs non contaminés:",
                     TLigneInfo2="Nombre de marqueurs informatifs contaminés:",
                     TLigneInfo3="Moyenne % contamination:",
                     TValueInfo1=str(conclusion[0]),
                     TValueInfo2=str(conclusion[1]),
                     TValueInfo3=str(conclusion[2]),
-                    colorvalue1=(23 / 256, 116 / 256, 10 / 256, 1),
-                    colorvalue2=(241 / 256, 31 / 256, 82 / 256, 1),
+                    colorvalue1=green, #(23 / 256, 116 / 256, 10 / 256, 1),
+                    colorvalue2=red, #(241 / 256, 31 / 256, 82 / 256, 1),
                     colorvalue3=colorinfo3,
                     sizeinfo3=sizeinfo3,
                     sizevalue3=sizevalue3
@@ -393,19 +462,20 @@ class ResAnalyse(BoxLayout):
 
                 for i in range(len(tableau_df.index)):
                     colortext = (256, 256, 256, 1)
-                    colmode = (49 / 255, 140 / 255, 231 / 255, 0.2)
+                    colmode = bleuet #(49 / 255, 140 / 255, 231 / 255, 0.2)
                     t_col2 = tableau_df["Conclusion"][i]
                     if tableau_df["Conclusion"][i] == 'Non contaminé':
-                        colortext = (23 / 256, 116 / 256, 10 / 256, 1)
+                        colortext = green #(23 / 256, 116 / 256, 10 / 256, 1)
                     if tableau_df["Conclusion"][i] == 'Contaminé':
                         t_col2 = '[b]' + tableau_df["Conclusion"][i] + '[/b]'
-                        colortext = (241 / 256, 31 / 256, 82 / 256, 1)
+                        colortext = red #(241 / 256, 31 / 256, 82 / 256, 1)
                     if tableau_df["Conclusion"][i] == "Non informatif":
                         colmode = (0.949, 0.945, 0.945, 0.2)
                     ligne = LigneTableau(t_col1=tableau_df["Marqueur"][i],
                                          t_col2=t_col2,
                                          t_col3=tableau_df["Détails M/F"][i],
                                          color_mode=colmode,
+                                         main_color=main_blue,
                                          color_text2=colortext,
                                          color_text3=colortext)
                     self.ids.le_tableau.add_widget(ligne)
@@ -414,7 +484,8 @@ class ResAnalyse(BoxLayout):
                     entete = LigneTableau(t_col1="Marqueurs",
                                           t_col2="Concordance Mere/Foetus",
                                           t_col3="Détails",
-                                          color_mode=(75 / 255, 127 / 255, 209 / 255, 1),
+                                          color_mode=main_blue, #(75 / 255, 127 / 255, 209 / 255, 1),
+                                          main_color=main_blue,
                                           color_text=(0.949, 0.945, 0.945, 1),
                                           color_text2=(0.949, 0.945, 0.945, 1),
                                           color_text3=(0.949, 0.945, 0.945, 1)
@@ -422,21 +493,22 @@ class ResAnalyse(BoxLayout):
                     self.ids.le_tableau.add_widget(entete)
 
                     self.ids.togglebutonEtLabel.clear_widgets()
-                    new_label = Label(text="Analyse non réalisée", color=(241 / 256, 31 / 256, 82 / 256, 1),
+                    new_label = Label(text="Analyse non réalisée", color=red, #(241 / 256, 31 / 256, 82 / 256, 1),
                                       font_size=30)
                     self.ids.togglebutonEtLabel.add_widget(new_label)
                     self.ids.labelPrelev.font_size = 30
-                    self.ids.labelPrelev.color = (241 / 256, 31 / 256, 82 / 256, 1)
+                    self.ids.labelPrelev.color = red #(241 / 256, 31 / 256, 82 / 256, 1)
 
                     for i in range(len(tableau_df.index)):
                         colortext = (256, 256, 256, 1)
-                        colmode = (49 / 255, 140 / 255, 231 / 255, 0.2)
+                        colmode = bleuet #(49 / 255, 140 / 255, 231 / 255, 0.2)
                         if tableau_df["Concordance Mere/Foetus"][i] == 'NON':
-                            colortext = (241 / 256, 31 / 256, 82 / 256, 1)
+                            colortext = red #(241 / 256, 31 / 256, 82 / 256, 1)
                         ligne = LigneTableau(t_col1=tableau_df["Marqueur"][i],
                                              t_col2=tableau_df["Concordance Mere/Foetus"][i],
                                              t_col3=tableau_df["Détails M/F"][i],
                                              color_mode=colmode,
+                                             main_color=main_blue,
                                              color_text2=colortext,
                                              color_text3=colortext)
                         self.ids.le_tableau.add_widget(ligne)
@@ -445,7 +517,9 @@ class ResAnalyse(BoxLayout):
                 else:
                     entete = LigneTableau(t_col1="Marqueurs",
                                           t_col2="Concordance Mere/Foetus",
-                                          t_col3="Détails M/F", color_mode=(75 / 255, 127 / 255, 209 / 255, 1),
+                                          t_col3="Détails M/F",
+                                          color_mode=main_blue, #(75 / 255, 127 / 255, 209 / 255, 1),
+                                          main_color=main_blue,
                                           color_text=(0.949, 0.945, 0.945, 1),
                                           color_text2=(0.949, 0.945, 0.945, 1),
                                           color_text3=(0.949, 0.945, 0.945, 1),
@@ -457,38 +531,43 @@ class ResAnalyse(BoxLayout):
                     entete.add_widget(col5)
                     self.ids.le_tableau.add_widget(entete)
                     self.ids.togglebutonEtLabel.clear_widgets()
-                    new_label = Label(text="Analyse non réalisée", color=(241 / 256, 31 / 256, 82 / 256, 1),
+                    new_label = Label(text="Analyse non réalisée", color=red, #(241 / 256, 31 / 256, 82 / 256, 1),
                                       font_size=30)
                     self.ids.togglebutonEtLabel.add_widget(new_label)
 
-                    self.ids.labelPrelev.color = (241 / 256, 31 / 256, 82 / 256, 1)
+                    self.ids.labelPrelev.color = red #(241 / 256, 31 / 256, 82 / 256, 1)
 
                     for i in range(len(tableau_df.index)):
                         if tableau_df["Concordance Mere/Foetus"][i] == 'NON':
                             for i in range(len(tableau_df.index)):
                                 colortext = (256, 256, 256, 1)
-                                colmode = (49 / 255, 140 / 255, 231 / 255, 0.2)
+                                colmode = bleuet #(49 / 255, 140 / 255, 231 / 255, 0.2)
                                 if tableau_df["Concordance Mere/Foetus"][i] == 'NON':
-                                    colortext = (241 / 256, 31 / 256, 82 / 256, 1)
+                                    colortext = red #(241 / 256, 31 / 256, 82 / 256, 1)
                                 else:
                                     colmode = (0.949, 0.945, 0.945, 0.2)
                                 if tableau_df["Concordance Pere/Foetus"][i] == 'NON':
                                     col4 = ColSupp(t_col=tableau_df["Concordance Pere/Foetus"][i],
-                                                   color=(241 / 256, 31 / 256, 82 / 256, 1))
+                                                   main_color=main_blue,
+                                                   color=red) #(241 / 256, 31 / 256, 82 / 256, 1))
                                 else:
                                     col4 = ColSupp(t_col=tableau_df["Concordance Pere/Foetus"][i],
+                                                   main_color=main_blue,
                                                    color=(256, 256, 256, 1))
                                     colmode = (0.949, 0.945, 0.945, 0.2)
                                 ligne = LigneTableau(t_col1=tableau_df["Marqueur"][i],
                                                      t_col2=tableau_df["Concordance Mere/Foetus"][i],
                                                      t_col3=tableau_df["Détails M/F"][i],
                                                      color_mode=colmode,
+                                                     main_color=main_blue,
                                                      color_text2=colortext,
                                                      color_text3=colortext)
 
                                 col5 = Label(text=tableau_df["Détails P/F"][i], color=(256, 256, 256, 1),
                                              text_size=(self.width, None))
-                                col5a = ColSupp(t_col=tableau_df["Détails P/F"][i], color=(256, 256, 256, 1))
+                                col5a = ColSupp(t_col=tableau_df["Détails P/F"][i],
+                                                main_color=main_blue,
+                                                color=(256, 256, 256, 1))
                                 ligne.add_widget(col4)
                                 ligne.add_widget(col5a)
 
@@ -503,22 +582,26 @@ class ResAnalyse(BoxLayout):
     def CouleurBouton(self, id):
         # non contamine
         if id == 0:
-            self.ids.TButtonNonContamine.background_color = (23 / 256, 116 / 256, 10 / 256, 1)
-            self.ids.TButtonNonContamine.color = [0.949, 0.945, 0.945, 1]
+            if  isinstance(self.InfoParametre["df_detail"][2],str) and self.InfoParametre["df_detail"][2] != "MAJEURE":
+                self.ids.TButtonNonContamine.background_color  = saumon #(255 / 256, 99 / 256, 71 / 256, 1)
+                self.ids.TButtonNonContamine.color = [0.945, 0.945, 0.945, 1]
+            else:
+                self.ids.TButtonNonContamine.background_color = green #(23 / 256, 116 / 256, 10 / 256, 1)
+                self.ids.TButtonNonContamine.color = [0.949, 0.945, 0.945, 1]
             self.ids.TButtonContamine.background_color = (220 / 255, 220 / 255, 220 / 255, 1)
             self.ids.TButtonContamine.color = [130 / 256, 130 / 256, 130 / 256, 1]
         # contamine
         else:
             # conta inf 5%
             if isinstance(self.InfoParametre["df_detail"][2],str) and self.InfoParametre["df_detail"][2] != "MAJEURE":
-                self.ids.TButtonContamine.background_color  = (255 / 256, 99 / 256, 71 / 256, 1)
-                self.ids.TButtonContamine.color = [0.698, 0.133, 0.133, 1]
+                self.ids.TButtonContamine.background_color  = saumon #(255 / 256, 99 / 256, 71 / 256, 1)
+                self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1] #[0.698, 0.133, 0.133, 1]
             # conta majeure
             elif self.InfoParametre["df_detail"][2] == "MAJEURE":
-                self.ids.TButtonContamine.background_color = (139 / 256, 0 / 256, 0 / 256, 1)
+                self.ids.TButtonContamine.background_color = darkred
                 self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1]
             else:
-                self.ids.TButtonContamine.background_color = (241 / 256, 31 / 256, 82 / 256, 1)
+                self.ids.TButtonContamine.background_color = red #(241 / 256, 31 / 256, 82 / 256, 1)
                 self.ids.TButtonContamine.color = [0.949, 0.945, 0.945, 1]
             self.ids.TButtonNonContamine.background_color = (220 / 256, 220 / 256, 220 / 256, 1)
             self.ids.TButtonNonContamine.color = [130 / 256, 130 / 256, 130 / 256, 1]
@@ -602,7 +685,7 @@ class getInput(Popup):
 
             self.cancelButton = Button()
             self.cancelButton.background_normal = ''
-            self.cancelButton.background_color = (75/255, 127/255, 209/255,1)
+            self.cancelButton.background_color = main_blue #(75/255, 127/255, 209/255,1)
             self.cancelButton.color = [0.949, 0.945, 0.945, 1]
             self.cancelButton.text = 'Cancel'
             self.cancelButton.size_hint_x = None
@@ -613,7 +696,7 @@ class getInput(Popup):
 
             self.okButton = Button()
             self.okButton.background_normal = ''
-            self.okButton.background_color = (75/255, 127/255, 209/255,1)
+            self.okButton.background_color = main_blue #(75/255, 127/255, 209/255,1)
             self.okButton.color = [0.949, 0.945, 0.945, 1]
             self.okButton.text = "OK"
             self.okButton.size_hint_x = None
@@ -905,6 +988,7 @@ class EcranFctMethod(GridLayout):
             self.InfoParametre["hauteur"] = self.hauteur
             contenu_res = ResAnalyse(
                 titre=self.titre,
+                main_color=main_blue,
                 nfoetus=self.InfoParametre["num_foetus"],
                 npere=self.InfoParametre["num_pere"],
                 nmere=self.InfoParametre["nom_mere"],
@@ -979,7 +1063,8 @@ class EcranFctMethod(GridLayout):
                 pdf_feuille_resultat.creation_PDF(os.path.join("temp_pdf"),
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["Echantillon"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["nom_pdf"],
-                                                  conclu,
+                                                  self.ids.les_onglets.current_tab.content.InfoParametre["choix"],
+                                                  self.ids.les_onglets.current_tab.content.InfoParametre["code_conclu"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["nom_utilisateur"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["hauteur"],
                                                   self.ids.les_onglets.current_tab.content.InfoParametre["nb"],
@@ -1020,6 +1105,7 @@ class EcranFctMethod(GridLayout):
         try:
             content = ParametreDialog(hauteur=str(self.ids.les_onglets.current_tab.content.InfoParametre["hauteur"]),
                                       nb=str(self.ids.les_onglets.current_tab.content.InfoParametre["nb"]),
+                                      main_color=main_blue,
                                       save_parametres=self.save_parametres,
                                       emetteur=self.ids.les_onglets.current_tab.content.InfoParametre["Emetteur"],
                                       entite=self.ids.les_onglets.current_tab.content.InfoParametre["Entite_appli"],
